@@ -1,0 +1,6 @@
+*.o
+main
+*.tmp
+*.bin
+.sh3
+.build-cache
