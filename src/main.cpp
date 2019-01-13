@@ -2,6 +2,9 @@
 
 using namespace std;
 
+using ll = long long;
+using ull = unsigned long long;
+
 
 template <typename T>
 istream& operator>>(istream& s, vector<T>& v)
@@ -59,21 +62,36 @@ int yes()
 
 int main()
 {
-    int n, m;
-    cin >> n >> m;
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-    unordered_map<string, int> mp;
-    for (int i = 0; i < m; ++i) {
-        int x;
-        string s;
-        cin >> x >> s;
-        mp[s] = x;
+    ll n;
+    cin >> n;
+    vector<ll> v(n);
+    cin >> v;
+    v.push_back(0);
+
+    stack<ll> st;
+
+    ll maxs = 0;
+
+    for (ll i = 0; i < n+1; ++i) {
+        if (st.empty()) {
+            st.push(i);
+            continue;
+        }
+        if (v[st.top()] <= v[i]) {
+            st.push(i);
+            continue;
+        } else {
+            ll cnt = 1;
+            while (!st.empty() && v[st.top()] >= v[i]) {
+                maxs = max(maxs, cnt * v[st.top()]);
+                st.pop();
+                ++cnt;
+            }
+            st.push(i);
+        }
     }
-
-    vector<int> v(n, 0);
-    for (const auto& i : mp) {
-        ++v[i.second - 1];
-    }
-
-    cout << v;
+    cout << maxs << endl;
 }
