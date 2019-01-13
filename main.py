@@ -1,8 +1,6 @@
-#!/usr/bin/env pypy
+#!/usr/bin/env python3
 
-input = raw_input
-
-def base_to_int(s, base):
+def unbase(s, base):
     for i in s:
         if int(i) >= base:
             raise ValueError('CTF{Y0U_F0UND_4_FL4G}')
@@ -15,27 +13,46 @@ def binsearch(l, r, f):
             l = m
         else:
             r = m
+    return l
 
 a, b, c = [input() for i in [0]*3]
 
 
 for start in range(11):
     try:
-        base_to_int(a, start)
-        base_to_int(b, start)
-        base_to_int(c, start)
+        unbase(a, start)
+        unbase(b, start)
+        unbase(c, start)
         break
     except ValueError:
         continue
 
+
+def sign(z):
+    return -1 if z < 0 else 1 if z > 0 else 0
+
+
+def f(z):
+    return unbase(a, z) + unbase(b, z) - unbase(c, z)
+
+
 def check(z):
-    return base_to_int(a, z) + base_to_int(b, z) == base_to_int(c, z)
+    if f(z) == 0:
+        raise IndexError(('FOUND!!1!', z))
+    return sign(f(z)) == sign(f(start))
 
 try:
-    for i in range(start, 100000):
-        if check(i):
-            print(i)
-            raise Exception(':)')
-    print(0)
-except Exception:
-    pass
+    if f(start) == 0:
+        print(start)
+    else:
+        z = binsearch(start, 10**9, check)
+        if f(z-1) == 0:
+            print(z-1)
+        elif f(z) == 0:
+            print(z)
+        elif f(z+1) == 0:
+            print(z+1)
+        else:
+            print(0)
+except IndexError as e:
+    print(e.args[0][1])
