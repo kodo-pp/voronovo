@@ -59,19 +59,21 @@ int yes()
 
 int main()
 {
-    int n, k;
-    cin >> n >> k;
-    vector<int> v(n);
-    cin >> v;
+    int n, m;
+    cin >> n >> m;
 
-    multiset<int> ms;
-    for (int i = 0; i < k; ++i) {
-        ms.insert(v[i]);
+    unordered_map<string, int> mp;
+    for (int i = 0; i < m; ++i) {
+        int x;
+        string s;
+        cin >> x >> s;
+        mp[s] = x;
     }
-    v.push_back(-0xBAD);
-    for (int i = 0; i < n - k + 1; ++i) {
-        cout << *ms.begin() << endl;
-        ms.erase(ms.find(v[i]));
-        ms.insert(v[i + k]);
+
+    vector<int> v(n, 0);
+    for (const auto& i : mp) {
+        ++v[i.second - 1];
     }
+
+    cout << v;
 }
