@@ -59,37 +59,19 @@ int yes()
 
 int main()
 {
-    auto pairs = [](char a, char b) -> bool {
-        return (a == '(' && b == ')')
-            || (a == ')' && b == '(')
-            || (a == '[' && b == ']')
-            || (a == ']' && b == '[')
-            || (a == '{' && b == '}')
-            || (a == '}' && b == '{');
-    };
-    auto opens = [](char a) -> bool {
-        return a == '(' || a == '[' || a == '{';
-    };
+    int n, k;
+    cin >> n >> k;
+    vector<int> v(n);
+    cin >> v;
 
-    string s;
-    cin >> s;
-    stack<char> st;
-
-    for (char c : s) {
-        if (opens(c)) {
-            st.push(c);
-        } else {
-            if (st.empty()) {
-                return no();
-            }
-            if (!pairs(st.top(), c)) {
-                return no();
-            }
-            st.pop();
-        }
+    multiset<int> ms;
+    for (int i = 0; i < k; ++i) {
+        ms.insert(v[i]);
     }
-    if (!st.empty()) {
-        return no();
+    v.push_back(-0xBAD);
+    for (int i = 0; i < n - k + 1; ++i) {
+        cout << *ms.begin() << endl;
+        ms.erase(ms.find(v[i]));
+        ms.insert(v[i + k]);
     }
-    return yes();
 }
