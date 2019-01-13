@@ -45,7 +45,7 @@ try:
     if f(start) == 0:
         print(start)
     else:
-        z = binsearch(start, 10**9, check)
+        z = binsearch(start, 10**100, check)
         if f(z-1) == 0:
             print(z-1)
         elif f(z) == 0:
