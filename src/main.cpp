@@ -84,55 +84,38 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
+    
+    {
+        int n;
+        cin >> n;
+    }
+    string s;
+    cin >> s;
+    sort(s.begin(), s.end());
 
-    ll n;
-    cin >> n;
-    vector<ll> v(n);
-    cin >> v;
-    v.push_back(0);
-
-    stack<ll> st;
-    ll sum = 0;
-
-    for (ll i = 0; i < n; ++i) {
-        db(i);
-        if (st.empty()) {
-            dbsx("Stack is empty");
-            st.push(i);
-            continue;
-        }
-        if (v[st.top()] >= v[i]) {
-            dbsx("Descending");
-            st.push(i);
-            continue;
-        }
-        dbsx("Ascending, unwinding stack");
-        dbx(st.top());
-        dbx(v[st.top()]);
-        dbx(i-1);
-        dbx(v[i-1]);
-        // assert(v[st.top()] >= v[i-1]);  <--- THIS IS WRONG
-
-
-        while (!st.empty() && v[st.top()] <= v[i-1]) {
-            dbsx("Pop v[" << st.top() << "] = " << v[st.top()]);
-            st.pop();
-        }
-
-        if (st.empty()) {
-            dbsx("After unwinding stack is empty");
-            st.push(i);
-        } else {
-            dbsx("Found left max: v[" << st.top() << "] = " << v[st.top()]);
-            dbsx(
-                "Add " << ((i-1) - st.top()) << " * " <<
-                (min(v[i], v[st.top()]) - v[i-1]) << " = " << ((i-1) - st.top()) *
-                (min(v[i], v[st.top()]) - v[i-1])
-            );
-            sum += ((i-1) - st.top()) * (min(v[i], v[st.top()]) - v[i-1]);
-            st.push(i);
-        }
+    array<int, 256> a;
+    for (auto& i : a) {
+        i = 0;
     }
 
-    cout << sum << endl;
+    for (auto& c : s) {
+        ++a[c];
+    }
+
+    for (int i = 0; i < 256; ++i) {
+        for (int j = 0; j < a[i]/2; ++j) {
+            cout << static_cast<char>(i);
+        }
+    }
+    for (int i = 0; i < 256; ++i) {
+        if (a[i] % 2 == 1) {
+            cout << static_cast<char>(i);
+            break;
+        }
+    }
+    for (int i = 255; i >= 0; --i) {
+        for (int j = 0; j < a[i]/2; ++j) {
+            cout << static_cast<char>(i);
+        }
+    }
 }
