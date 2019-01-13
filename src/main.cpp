@@ -1,5 +1,25 @@
 #include <bits/stdc++.h>
 
+#ifdef AAA
+#define db(x) \
+    std::cerr << "\x1b[1;35m[DEBUG] " << __LINE__ << "\t|\x1b[0;34m " \
+    #x "\x1b[0m = \x1b[32m" << (x) << "\x1b[0m" << std::endl
+#define dbx(x) \
+    std::cerr << "\x1b[1;35m[DEBUG] " << __LINE__ << "\t|     \x1b[0;34m " \
+    #x "\x1b[0m = \x1b[32m" << (x) << "\x1b[0m" << std::endl
+#define dbs(s) \
+    std::cerr << "\x1b[1;35m[DEBUG] " << __LINE__ << "\t| \x1b[0;34m " \
+    << s << "\x1b[0m" << std::endl
+#define dbsx(s) \
+    std::cerr << "\x1b[1;35m[DEBUG] " << __LINE__ << "\t|     \x1b[0;34m " \
+    << s << "\x1b[0m" << std::endl
+#else
+#define db(x)
+#define dbx(x)
+#define dbs(s)
+#define dbsx(s)
+#endif
+
 using namespace std;
 
 using ll = long long;
@@ -72,26 +92,47 @@ int main()
     v.push_back(0);
 
     stack<ll> st;
+    ll sum = 0;
 
-    ll maxs = 0;
-
-    for (ll i = 0; i < n+1; ++i) {
+    for (ll i = 0; i < n; ++i) {
+        db(i);
         if (st.empty()) {
+            dbsx("Stack is empty");
             st.push(i);
             continue;
         }
-        if (v[st.top()] <= v[i]) {
+        if (v[st.top()] >= v[i]) {
+            dbsx("Descending");
             st.push(i);
             continue;
+        }
+        dbsx("Ascending, unwinding stack");
+        dbx(st.top());
+        dbx(v[st.top()]);
+        dbx(i-1);
+        dbx(v[i-1]);
+        // assert(v[st.top()] >= v[i-1]);  <--- THIS IS WRONG
+
+
+        while (!st.empty() && v[st.top()] <= v[i-1]) {
+            dbsx("Pop v[" << st.top() << "] = " << v[st.top()]);
+            st.pop();
+        }
+
+        if (st.empty()) {
+            dbsx("After unwinding stack is empty");
+            st.push(i);
         } else {
-            ll cnt = 1;
-            while (!st.empty() && v[st.top()] >= v[i]) {
-                maxs = max(maxs, cnt * v[st.top()]);
-                st.pop();
-                ++cnt;
-            }
+            dbsx("Found left max: v[" << st.top() << "] = " << v[st.top()]);
+            dbsx(
+                "Add " << ((i-1) - st.top()) << " * " <<
+                (min(v[i], v[st.top()]) - v[i-1]) << " = " << ((i-1) - st.top()) *
+                (min(v[i], v[st.top()]) - v[i-1])
+            );
+            sum += ((i-1) - st.top()) * (min(v[i], v[st.top()]) - v[i-1]);
             st.push(i);
         }
     }
-    cout << maxs << endl;
+
+    cout << sum << endl;
 }
