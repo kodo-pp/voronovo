@@ -43,46 +43,53 @@ ostream& operator<<(ostream& s, const Student st)
 }
 
 
+int no()
+{
+    cout << "no" << endl;
+    return 0;
+}
+
+
+int yes()
+{
+    cout << "yes" << endl;
+    return 0;
+}
+
+
 int main()
 {
-    queue <int> q1, q2;
-    for (int i = 0; i < 5; ++i) {
-        int x;
-        cin >> x;
-        q1.push(x);
-    }
-    for (int i = 0; i < 5; ++i) {
-        int x;
-        cin >> x;
-        q2.push(x);
-    }
+    auto pairs = [](char a, char b) -> bool {
+        return (a == '(' && b == ')')
+            || (a == ')' && b == '(')
+            || (a == '[' && b == ']')
+            || (a == ']' && b == '[')
+            || (a == '{' && b == '}')
+            || (a == '}' && b == '{');
+    };
+    auto opens = [](char a) -> bool {
+        return a == '(' || a == '[' || a == '{';
+    };
 
-    int turns = 0;
-    
-    while (true) {
-        int a1 = q1.front();
-        int a2 = q2.front();
-        q1.pop();
-        q2.pop();
+    string s;
+    cin >> s;
+    stack<char> st;
 
-        if (((a1 != 9 || a2 != 0) && a1 > a2) || (a1 == 0 && a2 == 9)) {
-            q1.push(a1);
-            q1.push(a2);
+    for (char c : s) {
+        if (opens(c)) {
+            st.push(c);
         } else {
-            q2.push(a1);
-            q2.push(a2);
-        }
-        ++turns;
-
-        if (q1.empty()) {
-            cout << "second " << turns << endl;
-            return 0;
-        } else if (q2.empty()) {
-            cout << "first " << turns << endl;
-            return 0;
-        } else if (turns > 1000 * 1000) {
-            cout << "botva" << endl;
-            return 0;
+            if (st.empty()) {
+                return no();
+            }
+            if (!pairs(st.top(), c)) {
+                return no();
+            }
+            st.pop();
         }
     }
+    if (!st.empty()) {
+        return no();
+    }
+    return yes();
 }
