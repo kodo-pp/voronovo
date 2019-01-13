@@ -80,42 +80,69 @@ int yes()
 }
 
 
+bool is_extr(const vector<ll>& v, ll i)
+{
+    if (i == 0) {
+        return v[0] > v[1];
+    } else if (i == (ll)v.size() - 1) {
+        return v[i] > v[i-1];
+    } else {
+        return v[i] > v[i-1] && v[i] > v[i+1];
+    }
+}
+
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    {
-        int n;
-        cin >> n;
-    }
-    string s;
-    cin >> s;
-    sort(s.begin(), s.end());
+    ll n;
+    cin >> n;
 
-    array<int, 256> a;
-    for (auto& i : a) {
-        i = 0;
-    }
+    vector <ll> v(n);
+    cin >> v;
+    auto mv = v;
 
-    for (auto& c : s) {
-        ++a[c];
-    }
+    vector<ll> extrs;
 
-    for (int i = 0; i < 256; ++i) {
-        for (int j = 0; j < a[i]/2; ++j) {
-            cout << static_cast<char>(i);
+    ll maxv = 0;
+    for (ll i = 0; i < n; ++i) {
+        if (v[i] > maxv) {
+            extrs.push_back(i);
+            maxv = v[i];
         }
     }
-    for (int i = 0; i < 256; ++i) {
-        if (a[i] % 2 == 1) {
-            cout << static_cast<char>(i);
-            break;
+    
+    maxv = 0;
+    for (ll i = n-1; i >= 0; --i) {
+        if (v[i] > maxv) {
+            extrs.push_back(i);
+            maxv = v[i];
         }
     }
-    for (int i = 255; i >= 0; --i) {
-        for (int j = 0; j < a[i]/2; ++j) {
-            cout << static_cast<char>(i);
+
+    sort(extrs.begin(), extrs.end());
+    auto it = unique(extrs.begin(), extrs.end());
+    extrs.resize(it - extrs.begin());
+    
+    ll m = extrs.size();
+    ll sum = 0;
+    for (ll i = 1; i < m; ++i) {
+        auto ai = extrs[i-1];
+        auto bi = extrs[i];
+        auto z = min(v[ai], v[bi]);
+        db(ai);
+        db(bi);
+        db(z);
+        for (ll j = ai + 1; j <= bi - 1; ++j) {
+            dbx(j);
+            dbx(v[j]);
+            dbx(z - v[j]);
+            assert(z - v[j] >= 0);
+            sum += z - v[j];
         }
     }
+
+    cout << sum << endl;
 }
