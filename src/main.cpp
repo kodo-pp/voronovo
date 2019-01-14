@@ -369,7 +369,7 @@ int main()
         --y2;
         --z2;
         auto result = get(x2, y2, z2) - get(x1, y2, z2) - get(x2, y1, z2) - get(x2, y2, z1) \
-            + get(x1, y1, z2) + get(x1, y2, z1) + get(z2, y1, z1) - get(x1, y1, z1);
+            + get(x1, y1, z2) + get(x1, y2, z1) + get(x2, y1, z1) - get(x1, y1, z1);
         cout << result << endl;
     }
 }
