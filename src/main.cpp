@@ -113,6 +113,7 @@ ll log_down(ll n)
 
 template <typename T>
 class SegmentTree
+
 {
 public:
     SegmentTree(const vector<T>& v, const function<T(T, T)>& func, const T& neutral):
@@ -124,12 +125,14 @@ public:
         build_tree();
     }
 
-    void build_tree() {
+    void build_tree()
+    {
         while (k <= n) {
             k *= 2;
         }
         a.resize(k, neutral);
         tree.resize(2 * k, neutral);
+        add.resize(2 * k, 0);
         for (ll i = k; i < 2 * k; ++i) {
             tree[i] = a[i-k];
         }
@@ -138,7 +141,9 @@ public:
         }
     }
 
-    T find(ll l, ll r) {
+    /*
+    T find(ll l, ll r)
+    {
         T M = neutral;
         l += k;
         r += k;
@@ -154,8 +159,59 @@ public:
         }
         return M;
     }
+    */
 
-    vector<T> tree, a;
+    T find(ll l, ll r)
+    {
+        return _find(1, l, r, 0, k);
+    }
+
+    T _find(ll x, ll l, ll r, ll L, ll R)
+    {
+        push(x);
+        if (R <= l || L >= r) {
+            return neutral;
+        } else if (R <= r && L >= l) {
+            return tree[x];
+        } else {
+            ll M = (L + R) / 2;
+            auto a = _find(2 * x,     l, r, L, M);
+            auto b = _find(2 * x + 1, l, r, M, R);
+            return func(a, b);
+        }
+    }
+
+    void add_range(ll l, ll r, const T& v)
+    {
+        _add_range(1, l, r, v, 0, k);
+    }
+
+
+    void _add_range(ll x, ll l, ll r, const T& v, ll L, ll R)
+    {
+        if (R <= l || L >= r) {
+            // No intersection
+            return;
+        } else if (R <= r && L >= l) {
+            add[x] += v;
+        } else {
+            ll M = (L + R) / 2;
+            _add_range(2 * x,     l, r, v, L, M);
+            _add_range(2 * x + 1, l, r, v, M, R);
+        }
+    }
+
+    void push(ll x)
+    {
+        tree[x] += add[x];
+        if (x < k) {
+            add[2*x] += add[x];
+            add[2*x+1] += add[x];
+        }
+        add[x] = 0;
+    }
+
+    vector<T> tree, a, add;
     function<T(T, T)> func;
     T neutral;
     ll n;
@@ -167,24 +223,21 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n;
-    cin >> n;
-    vector<ll> v(n);
-    cin >> v;
-    for (auto& i : v) {
-        i = (i == 0 ? 1 : 0);
-    }
+    ll n, k, m;
+    cin >> n >> k >> m;
+    vector<ll> a(n, k);
+    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return min(a, b); }, 99999999999LL);
 
-    SegmentTree<ll> segtree(v, [](ll a, ll b) -> ll { return a + b; }, 0);
-    
-    ll k;
-    cin >> k;
-    for (ll i = 0; i < k; ++i) {
+    for (ll i = 0; i < m; ++i) {
         ll a, b;
         cin >> a >> b;
-        --a;
-        --b;
-        cout << segtree.find(a, b) << ' ';
+        auto mn = segtree.find(a, b);
+        //db(mn);
+        if (mn == 0) {
+            cout << '0' << endl;
+        } else {
+            cout << '1' << endl;
+            segtree.add_range(a, b, -1);
+        }
     }
-    cout << endl;
 }
