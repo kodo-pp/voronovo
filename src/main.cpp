@@ -168,12 +168,21 @@ public:
 
     T _find(ll x, ll l, ll r, ll L, ll R)
     {
+        //dbs("find(x = " << x << ", L = " << L << ", R = " << R << ", l = " << l << ", r = " << r);
+        //dbx(add[x]);
+        //dbx(tree[x]);
+        //dbsx("push(" << x << ")");
         push(x);
+        //dbx(add[x]);
+        //dbx(tree[x]);
         if (R <= l || L >= r) {
+            //dbsx("No intersection");
             return neutral;
         } else if (R <= r && L >= l) {
+            //dbsx("Full entry");
             return tree[x];
         } else {
+            //dbsx("Branching");
             ll M = (L + R) / 2;
             auto a = _find(2 * x,     l, r, L, M);
             auto b = _find(2 * x + 1, l, r, M, R);
@@ -189,20 +198,48 @@ public:
 
     void _add_range(ll x, ll l, ll r, const T& v, ll L, ll R)
     {
+        //dbs("add_range(x = " << x << ", L = " << L << ", R = " << R << ", l = " << l << ", r = " << r << ", v = " << v);
+        //dbx(add[x]);
+        //dbx(tree[x]);
+        //dbsx("push(" << x << ")");
+        push(x);
+        //dbx(add[x]);
+        //dbx(tree[x]);
         if (R <= l || L >= r) {
-            // No intersection
+            //dbsx("No intersection");
             return;
         } else if (R <= r && L >= l) {
+            //dbsx("Full entry");
             add[x] += v;
         } else {
+            //dbsx("Branching");
             ll M = (L + R) / 2;
             _add_range(2 * x,     l, r, v, L, M);
             _add_range(2 * x + 1, l, r, v, M, R);
         }
+        push(x);
+        update_tree(x/2);
+    }
+
+    void update_tree(ll x) 
+    {
+        if (x == 0) {
+            return;
+        }
+        if (x >= k) {
+            return;
+        }
+        tree[x] = func(tree[2*x], tree[2*x+1]);
     }
 
     void push(ll x)
     {
+        if (add[x] != 0) {
+            //dbs("==> PUSH " << x);
+            //db(tree[x]);
+            //db(add[x]);
+            //dbs("==> END PUSH");
+        }
         tree[x] += add[x];
         if (x < k) {
             add[2*x] += add[x];
@@ -231,8 +268,14 @@ int main()
     for (ll i = 0; i < m; ++i) {
         ll a, b;
         cin >> a >> b;
+        //dbx(a);
+        //dbx(b);
+        //dbx(segtree.tree);
+        //dbx(segtree.add);
         auto mn = segtree.find(a, b);
         //db(mn);
+        //dbx(segtree.tree);
+        //dbx(segtree.add);
         if (mn == 0) {
             cout << '0' << endl;
         } else {
