@@ -263,25 +263,25 @@ namespace inv
 {
 
 template <typename T>
-int merge(vector<T>& v, int start, int mid, int end)
+ll merge(vector<T>& v, ll start, ll mid, ll end)
 {
     dbs("merge(" << start << ", " << mid << ", " << end << ")");
     dbx(v);
-    queue<int> q1;
+    queue<ll> q1;
     dbs("q1:");
-    for (int i = start; i < mid; ++i) {
+    for (ll i = start; i < mid; ++i) {
         dbsx(v[i]);
         q1.push(v[i]);
     }
     dbs("q2:");
-    queue<int> q2;
-    for (int i = mid; i < end; ++i) {
+    queue<ll> q2;
+    for (ll i = mid; i < end; ++i) {
         dbsx(v[i]);
         q2.push(v[i]);
     }
 
-    int ptr = start;
-    int inv = 0;
+    ll ptr = start;
+    ll inv = 0;
     while (!q1.empty() || !q2.empty()) {
         if (q1.empty()) {
             v[ptr] = q2.front();
@@ -310,14 +310,14 @@ int merge(vector<T>& v, int start, int mid, int end)
 }
 
 template <typename T>
-int merge_sort(vector<T>& v, int start, int end)
+ll merge_sort(vector<T>& v, ll start, ll end)
 {
     if (end - start <= 1) {
         return 0;
     }
-    int mid = (end + start) / 2;
+    ll mid = (end + start) / 2;
 
-    int sum = 0;
+    ll sum = 0;
     sum += inv::merge_sort(v, start, mid);
     sum += inv::merge_sort(v, mid, end);
     sum += inv::merge(v, start, mid, end);
@@ -335,19 +335,19 @@ int main()
     ll n, L;
     cin >> n >> L;
 
-    vector<int> w(n);
+    vector<ll> w(n);
     cin >> w;
 
-    vector<pair<int, int>> times;
-    for (int i = 0; i < n; ++i) {
+    vector<pair<ll, ll>> times;
+    for (ll i = 0; i < n; ++i) {
         times.emplace_back(i + L * w[i], i);
     }
 
-    stable_sort(times.begin(), times.end(), [](const pair<int, int>& a, const pair<int, int>& b) -> bool {
+    stable_sort(times.begin(), times.end(), [](const pair<ll, ll>& a, const pair<ll, ll>& b) -> bool {
         return a.first < b.first;
     });
 
-    vector<int> ends;
+    vector<ll> ends;
     for (auto& i : times) {
         ends.push_back(i.second);
     }
