@@ -18,6 +18,7 @@
 #define dbx(x)
 #define dbs(s)
 #define dbsx(s)
+#pragma GCC optimize ("O3")
 #endif
 
 using namespace std;
@@ -92,57 +93,95 @@ bool is_extr(const vector<ll>& v, ll i)
 }
 
 
+ll log_up(ll n)
+{
+    ll log = 0;
+    while ((1 << log) < n) {
+        ++log;
+    }
+    return log;
+}
+
+ll log_down(ll n)
+{
+    ll log = 0;
+    while ((1 << log) <= n) {
+        ++log;
+    }
+    return log - 1;
+}
+
+template <typename T>
+class SegmentTree
+{
+public:
+    SegmentTree(const vector<T>& v, const function<T(T, T)>& func, const T& neutral):
+        a(v),
+        func(func),
+        neutral(neutral),
+        n(v.size())
+    {
+        build_tree();
+    }
+
+    void build_tree() {
+        while (k <= n) {
+            k *= 2;
+        }
+        a.resize(k, neutral);
+        tree.resize(2 * k, neutral);
+        for (ll i = k; i < 2 * k; ++i) {
+            tree[i] = a[i-k];
+        }
+        for (ll i = k - 1; i > 0; --i) {
+            tree[i] = func(tree[2*i], tree[2*i+1]);
+        }
+    }
+
+    T find(ll l, ll r) {
+        T M = neutral;
+        l += k;
+        r += k;
+        while (l <= r) {
+            if (l % 2 == 1) {
+                M = func(M, tree[l]);
+            }
+            if (r % 2 == 0) {
+                M = func(M, tree[r]);
+            }
+            l = (l+1) / 2;
+            r = (r-1) / 2;
+        }
+        return M;
+    }
+
+    vector<T> tree, a;
+    function<T(T, T)> func;
+    T neutral;
+    ll n;
+    int k = 1;
+};
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    
+
     ll n;
     cin >> n;
-
-    vector <ll> v(n);
+    vector<ll> v(n);
     cin >> v;
-    auto mv = v;
 
-    vector<ll> extrs;
-
-    ll maxv = 0;
-    for (ll i = 0; i < n; ++i) {
-        if (v[i] > maxv) {
-            extrs.push_back(i);
-            maxv = v[i];
-        }
-    }
+    SegmentTree<ll> segtree(v, [](ll a, ll b) -> ll { return max(a, b); }, -100000000000LL);
     
-    maxv = 0;
-    for (ll i = n-1; i >= 0; --i) {
-        if (v[i] > maxv) {
-            extrs.push_back(i);
-            maxv = v[i];
-        }
+    ll k;
+    cin >> k;
+    for (ll i = 0; i < k; ++i) {
+        ll a, b;
+        cin >> a >> b;
+        --a;
+        --b;
+        cout << segtree.find(a, b) << ' ';
     }
-
-    sort(extrs.begin(), extrs.end());
-    auto it = unique(extrs.begin(), extrs.end());
-    extrs.resize(it - extrs.begin());
-    
-    ll m = extrs.size();
-    ll sum = 0;
-    for (ll i = 1; i < m; ++i) {
-        auto ai = extrs[i-1];
-        auto bi = extrs[i];
-        auto z = min(v[ai], v[bi]);
-        db(ai);
-        db(bi);
-        db(z);
-        for (ll j = ai + 1; j <= bi - 1; ++j) {
-            dbx(j);
-            dbx(v[j]);
-            dbx(z - v[j]);
-            assert(z - v[j] >= 0);
-            sum += z - v[j];
-        }
-    }
-
-    cout << sum << endl;
+    cout << endl;
 }
