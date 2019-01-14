@@ -271,33 +271,106 @@ ll gcd(ll a, ll b)
     }
 }
 
+
+struct Edge
+{
+    Edge(): a(0), b(0), w(0)
+    { }
+
+    Edge(ll a, ll b, ll w): a(a), b(b), w(w)
+    { }
+
+    bool operator<(const Edge& rhs) const
+    {
+        return w < rhs.w;
+    }
+    ll a, b, w;
+};
+
+istream& operator>>(istream& in, Edge& e)
+{
+    in >> e.a >> e.b >> e.w;
+    return in;
+}
+
+ostream& operator<<(ostream& out, const Edge& e)
+{
+    out << "[" << e.a << " -> " << e.b << ": " << e.w << "]";
+    return out;
+}
+
+
+class Dsu
+{
+public:
+    Dsu(const vector <ll>& _v)
+        : v(_v)
+        , n(_v.size())
+        , parent(n, -1)
+    { }
+
+    int get(int x)
+    {
+        dbs("get(" << x << ")");
+        int tmp = x;
+        while (parent.at(tmp) != -1) {
+            dbsx(tmp);
+            tmp = parent.at(tmp);
+            dbsx(tmp);
+        }
+
+        return tmp;
+    }
+
+    void join(int a, int b)
+    {
+        dbs("join(" << a << ", " << b << ")");
+        a = get(a);
+        b = get(b);
+        dbx(a);
+        dbx(b);
+        if (a == b) {
+            return;
+        }
+
+        if (rand() & (1 << 5)) {
+            parent.at(a) = b;
+        } else {
+            parent.at(b) = a;
+        }
+    }
+
+    int n;
+    vector <int> parent;
+    vector <ll> v;
+};
+
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n;
-    cin >> n;
-    vector<ll> a(n);
-    cin >> a;
-    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return gcd(a, b); }, 0);
+    ll n, k;
+    cin >> n >> k;
 
-    ll k;
-    cin >> k;
+    vector<Edge> edges(k);
+    cin >> edges;
 
-    for (ll i = 0; i < k; ++i) {
-        char t;
-        ll a, b;
-        cin >> t >> a >> b;
-        --a;
-        if (t == 's') {
-            cout << segtree.find(a, b) << ' ';
-        } else {
-            segtree.set(a, b);
+    sort(edges.begin(), edges.end());
+
+    vector<ll> v(n + 1, 0);
+    vector<ll> weights;
+    Dsu dsu(v);
+    for (auto e : edges) {
+        db(e);
+        if (dsu.get(e.a) == dsu.get(e.b)) {
+            dbsx("Skip");
+            continue;
         }
-        //db(mn);
-        //dbx(segtree.tree);
-        //dbx(segtree.add);
+        dbsx("Use");
+        dsu.join(e.a, e.b);
+        weights.push_back(e.w);
     }
-    cout << endl;
+    cout << *max_element(weights.begin(), weights.end()) << endl;
 }
