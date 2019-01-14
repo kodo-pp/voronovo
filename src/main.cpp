@@ -132,7 +132,7 @@ public:
         }
         a.resize(k, neutral);
         tree.resize(2 * k, neutral);
-        add.resize(2 * k, 0);
+        //add.resize(2 * k, 0);
         for (ll i = k; i < 2 * k; ++i) {
             tree[i] = a[i-k];
         }
@@ -190,6 +190,7 @@ public:
         }
     }
 
+    /*
     void add_range(ll l, ll r, const T& v)
     {
         _add_range(1, l, r, v, 0, k);
@@ -220,7 +221,7 @@ public:
         push(x);
         update_tree(x/2);
     }
-
+    */
     void update_tree(ll x) 
     {
         if (x == 0) {
@@ -232,8 +233,9 @@ public:
         tree[x] = func(tree[2*x], tree[2*x+1]);
     }
 
-    void push(ll x)
+    void push(ll /*x*/)
     {
+        /*
         if (add[x] != 0) {
             //dbs("==> PUSH " << x);
             //db(tree[x]);
@@ -246,9 +248,10 @@ public:
             add[2*x+1] += add[x];
         }
         add[x] = 0;
+        */
     }
 
-    vector<T> tree, a, add;
+    vector<T> tree, a /*, add*/;
     function<T(T, T)> func;
     T neutral;
     ll n;
@@ -260,27 +263,33 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n, k, m;
-    cin >> n >> k >> m;
-    vector<ll> a(n, k);
-    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return min(a, b); }, 99999999999LL);
+    ll n;
+    cin >> n;
+    vector<pair<ll, ll>> a;
+    a.reserve(n);
+    for (ll i = 0; i < n; ++i) {
+        ll x;
+        cin >> x;
+        a.emplace_back(x, 1);
+    }
 
+    auto trans = [](const pair<ll, ll>& a, const pair<ll, ll>& b) -> pair<ll, ll> {
+        if (a.first == b.first) {
+            return {a.first, a.second + b.second};
+        } else {
+            return a.first > b.first ? a : b;
+        }
+    };
+
+    SegmentTree<pair<ll, ll>> segtree(a, trans, {-9999999999LL, 0});
+
+    ll m;
+    cin >> m;
     for (ll i = 0; i < m; ++i) {
         ll a, b;
         cin >> a >> b;
-        //dbx(a);
-        //dbx(b);
-        //dbx(segtree.tree);
-        //dbx(segtree.add);
-        auto mn = segtree.find(a, b);
-        //db(mn);
-        //dbx(segtree.tree);
-        //dbx(segtree.add);
-        if (mn == 0) {
-            cout << '0' << endl;
-        } else {
-            cout << '1' << endl;
-            segtree.add_range(a, b, -1);
-        }
+        ll mx, cnt;
+        tie(mx, cnt) = segtree.find(a - 1, b);
+        cout << mx << ' ' << cnt << endl;
     }
 }
