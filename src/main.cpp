@@ -171,8 +171,11 @@ int main()
     cin >> n;
     vector<ll> v(n);
     cin >> v;
+    for (auto& i : v) {
+        i = (i == 0 ? 1 : 0);
+    }
 
-    SegmentTree<ll> segtree(v, [](ll a, ll b) -> ll { return max(a, b); }, -100000000000LL);
+    SegmentTree<ll> segtree(v, [](ll a, ll b) -> ll { return a + b; }, 0);
     
     ll k;
     cin >> k;
