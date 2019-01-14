@@ -280,7 +280,7 @@ int main()
     cin >> n;
     vector<ll> a(n);
     cin >> a;
-    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return max(a, b); }, -12981938LL);
+    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return a + b; }, 0);
 
     ll k;
     cin >> k;
