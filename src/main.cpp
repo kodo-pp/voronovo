@@ -258,38 +258,100 @@ public:
     int k = 1;
 };
 
+
+namespace inv
+{
+
+template <typename T>
+int merge(vector<T>& v, int start, int mid, int end)
+{
+    dbs("merge(" << start << ", " << mid << ", " << end << ")");
+    dbx(v);
+    queue<int> q1;
+    dbs("q1:");
+    for (int i = start; i < mid; ++i) {
+        dbsx(v[i]);
+        q1.push(v[i]);
+    }
+    dbs("q2:");
+    queue<int> q2;
+    for (int i = mid; i < end; ++i) {
+        dbsx(v[i]);
+        q2.push(v[i]);
+    }
+
+    int ptr = start;
+    int inv = 0;
+    while (!q1.empty() || !q2.empty()) {
+        if (q1.empty()) {
+            v[ptr] = q2.front();
+            ++ptr;
+            q2.pop();
+        } else if (q2.empty()) {
+            v[ptr] = q1.front();
+            ++ptr;
+            q1.pop();
+        } else {
+            if (q1.front() <= q2.front()) {
+                v[ptr] = q1.front();
+                ++ptr;
+                q1.pop();
+            } else {
+                inv += q1.size();
+                v[ptr] = q2.front();
+                ++ptr;
+                q2.pop();
+            }
+        }
+    }
+    dbs("after:");
+    dbx(v);
+    return inv;
+}
+
+template <typename T>
+int merge_sort(vector<T>& v, int start, int end)
+{
+    if (end - start <= 1) {
+        return 0;
+    }
+    int mid = (end + start) / 2;
+
+    int sum = 0;
+    sum += inv::merge_sort(v, start, mid);
+    sum += inv::merge_sort(v, mid, end);
+    sum += inv::merge(v, start, mid, end);
+    return sum;
+}
+
+} // namespace inv
+
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n;
-    cin >> n;
-    vector<pair<ll, ll>> a;
-    a.reserve(n);
-    for (ll i = 0; i < n; ++i) {
-        ll x;
-        cin >> x;
-        a.emplace_back(x, 1);
+    ll n, L;
+    cin >> n >> L;
+
+    vector<int> w(n);
+    cin >> w;
+
+    vector<pair<int, int>> times;
+    for (int i = 0; i < n; ++i) {
+        times.emplace_back(i + L * w[i], i);
     }
 
-    auto trans = [](const pair<ll, ll>& a, const pair<ll, ll>& b) -> pair<ll, ll> {
-        if (a.first == b.first) {
-            return {a.first, a.second + b.second};
-        } else {
-            return a.first > b.first ? a : b;
-        }
-    };
+    stable_sort(times.begin(), times.end(), [](const pair<int, int>& a, const pair<int, int>& b) -> bool {
+        return a.first < b.first;
+    });
 
-    SegmentTree<pair<ll, ll>> segtree(a, trans, {-9999999999LL, 0});
-
-    ll m;
-    cin >> m;
-    for (ll i = 0; i < m; ++i) {
-        ll a, b;
-        cin >> a >> b;
-        ll mx, cnt;
-        tie(mx, cnt) = segtree.find(a - 1, b);
-        cout << mx << ' ' << cnt << endl;
+    vector<int> ends;
+    for (auto& i : times) {
+        ends.push_back(i.second);
     }
+
+    db(ends);
+    cout << inv::merge_sort(ends, 0, n) << endl;
 }
