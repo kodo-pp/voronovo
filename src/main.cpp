@@ -255,32 +255,121 @@ public:
     int k = 1;
 };
 
+
+using vvv = vector<vector<vector<ll>>>;
+
+vvv build_x(const vvv& cube)
+{
+    vvv res = cube;
+    ll X = cube.size();
+    ll Y = cube[0].size();
+    ll Z = cube[0][0].size();
+    dbs("build_x");
+    dbx(X);
+    dbx(Y);
+    dbx(Z);
+
+    for (ll y = 0; y < Y; ++y) {
+        for (ll z = 0; z < Z; ++z) {
+            ll sum = 0;
+            for (ll x = 0; x < X; ++x) {
+                sum += cube[x][y][z];
+                res[x][y][z] = sum;
+            }
+        }
+    }
+    return res;
+}
+
+vvv build_y(const vvv& cube)
+{
+    vvv res = cube;
+    ll X = cube.size();
+    ll Y = cube[0].size();
+    ll Z = cube[0][0].size();
+    dbs("build_y");
+    dbx(X);
+    dbx(Y);
+    dbx(Z);
+
+    for (ll x = 0; x < X; ++x) {
+        for (ll z = 0; z < Z; ++z) {
+            ll sum = 0;
+            for (ll y = 0; y < Y; ++y) {
+                sum += cube[x][y][z];
+                res[x][y][z] = sum;
+            }
+        }
+    }
+    return res;
+}
+
+vvv build_z(const vvv& cube)
+{
+    vvv res = cube;
+    ll X = cube.size();
+    ll Y = cube[0].size();
+    ll Z = cube[0][0].size();
+    dbs("build_z");
+    dbx(X);
+    dbx(Y);
+    dbx(Z);
+
+    for (ll y = 0; y < Y; ++y) {
+        for (ll x = 0; x < X; ++x) {
+            ll sum = 0;
+            for (ll z = 0; z < Z; ++z) {
+                sum += cube[x][y][z];
+                res[x][y][z] = sum;
+            }
+        }
+    }
+    return res;
+}
+
+
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n, k, m;
-    cin >> n >> k >> m;
-    vector<ll> a(n, k);
-    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return min(a, b); }, 99999999999LL);
+    ll n, m, k;
+    cin >> n >> m >> k;
+    vector<vector<vector<ll>>> v;
+    v.resize(n, vector<vector<ll>>(m, vector<ll>(k)));
+    cin >> v;
+    auto presum = build_x(build_y(build_z(v)));
+    ll q;
+    cin >> q;
 
-    for (ll i = 0; i < m; ++i) {
-        ll a, b;
-        cin >> a >> b;
-        //dbx(a);
-        //dbx(b);
-        //dbx(segtree.tree);
-        //dbx(segtree.add);
-        auto mn = segtree.find(a, b);
-        //db(mn);
-        //dbx(segtree.tree);
-        //dbx(segtree.add);
-        if (mn == 0) {
-            cout << '0' << endl;
-        } else {
-            cout << '1' << endl;
-            segtree.add_range(a, b, -1);
+
+    auto get = [&](ll x, ll y, ll z) -> ll {
+        dbs("get(" << x << ", " << y << ", " << z << ") ...");
+        if (x < 0 || y < 0 || z < 0) {
+            dbs("... = 0");
+            return 0;
         }
+        dbs("... = " << presum[x][y][z]);
+        return presum[x][y][z];
+    };
+
+    for (ll i = 0; i < q; ++i) {
+        ll x1, y1, z1, x2, y2, z2;
+        cin >> x1 >> y1 >> z1 >> x2 >> y2 >> z2;
+        --x1;
+        --y1;
+        --z1;
+
+        --x1;
+        --y1;
+        --z1;
+
+        --x2;
+        --y2;
+        --z2;
+        auto result = get(x2, y2, z2) - get(x1, y2, z2) - get(x2, y1, z2) - get(x2, y2, z1) \
+            + get(x1, y1, z2) + get(x1, y2, z1) + get(z2, y1, z1) - get(x1, y1, z1);
+        cout << result << endl;
     }
 }
