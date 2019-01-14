@@ -226,10 +226,16 @@ public:
         if (x == 0) {
             return;
         }
-        if (x >= k) {
-            return;
+        if (x < k) {
+            tree[x] = func(tree[2*x], tree[2*x+1]);
         }
-        tree[x] = func(tree[2*x], tree[2*x+1]);
+        update_tree(x/2);
+    }
+
+    void set(ll y, const T& v)
+    {
+        tree[k+y] = v;
+        update_tree(k+y);
     }
 
     void push(ll x)
@@ -274,20 +280,21 @@ int main()
     cin >> n;
     vector<ll> a(n);
     cin >> a;
-    SegmentTree<ll> segtree(a, gcd, 0);
+    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return max(a, b); }, -12981938LL);
 
     ll k;
     cin >> k;
 
     for (ll i = 0; i < k; ++i) {
+        char t;
         ll a, b;
-        cin >> a >> b;
+        cin >> t >> a >> b;
         --a;
-        //dbx(a);
-        //dbx(b);
-        //dbx(segtree.tree);
-        //dbx(segtree.add);
-        cout << segtree.find(a, b) << ' ';
+        if (t == 's') {
+            cout << segtree.find(a, b) << ' ';
+        } else {
+            segtree.set(a, b);
+        }
         //db(mn);
         //dbx(segtree.tree);
         //dbx(segtree.add);
