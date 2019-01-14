@@ -255,32 +255,42 @@ public:
     int k = 1;
 };
 
+
+ll gcd(ll a, ll b)
+{
+    if (a == 0) {
+        return b;
+    } else {
+        return gcd(b % a, a);
+    }
+}
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n, k, m;
-    cin >> n >> k >> m;
-    vector<ll> a(n, k);
-    SegmentTree<ll> segtree(a, [](ll a, ll b) -> ll { return min(a, b); }, 99999999999LL);
+    ll n;
+    cin >> n;
+    vector<ll> a(n);
+    cin >> a;
+    SegmentTree<ll> segtree(a, gcd, 0);
 
-    for (ll i = 0; i < m; ++i) {
+    ll k;
+    cin >> k;
+
+    for (ll i = 0; i < k; ++i) {
         ll a, b;
         cin >> a >> b;
+        --a;
         //dbx(a);
         //dbx(b);
         //dbx(segtree.tree);
         //dbx(segtree.add);
-        auto mn = segtree.find(a, b);
+        cout << segtree.find(a, b) << ' ';
         //db(mn);
         //dbx(segtree.tree);
         //dbx(segtree.add);
-        if (mn == 0) {
-            cout << '0' << endl;
-        } else {
-            cout << '1' << endl;
-            segtree.add_range(a, b, -1);
-        }
     }
+    cout << endl;
 }
