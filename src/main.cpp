@@ -457,13 +457,11 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    Lvec p, q;
-    cin >> p >> q;
-    LD A, B, C;
+    ll A, B, C;
     cin >> A >> B >> C;
-    if ((A * p.x + B * p.y + C) * (A * q.x + B * q.y + C) > 0) {
-        cout << "YES" << endl;
-    } else {
-        cout << "NO" << endl;
-    }
+
+    Vec2<ll> m;
+    cin >> m;
+    
+    cout << B << ' ' << -A << ' ' << A * m.y - B * m.x << endl;
 }
