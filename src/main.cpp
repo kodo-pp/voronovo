@@ -402,6 +402,11 @@ struct Vec2
     {
         return sqrt(len_sq());
     }
+
+    bool operator==(const Vec2<T>& rhs)
+    {
+        return x == rhs.x && y == rhs.y;
+    }
 };
 
 
@@ -429,12 +434,45 @@ T tri_area(const Vec2<T>& AB, const Vec2<T>& AC)
 }
 
 
+template <typename T>
+tuple<T, T, T> make_line(const Vec2<T>& a, const Vec2<T>& b)
+{
+    auto A = b.y - a.y;
+    auto B = a.x - b.x;
+    auto C = b % a;
+    return make_tuple(A, B, C);
+}
+
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    Lvec a, b;
-    cin >> a >> b;
-    cout << setprecision(10) << acos(a * b / (a.len() * b.len())) << endl;
+    Lvec m, a, b;
+    cin >> m >> a >> b;
+    cout << setprecision(15);
+    
+    if (a == b) {
+        cout << '0' << endl;
+        return 0;
+    }
+
+    LD A = 0, B = 0, C = 0;
+    tie(A, B, C) = make_line(a, b);
+
+    Lvec normal(A, B);
+    Lvec fwd = m + normal;
+
+    Lvec ma = a - m;
+    Lvec mb = b - m;
+    Lvec mp = fwd - m;
+
+    if ((ma % mp) * (mp % mb) > 0) {
+        cout << abs(A * m.x + B * m.y + C) / sqrt(A * A + B * B) << endl;
+        return 0;
+    } else {
+        cout << min(ma.len(), mb.len()) << endl;
+        return 0;
+    }
 }
