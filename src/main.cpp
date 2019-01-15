@@ -457,11 +457,21 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    Vec2<ll> m, a, b;
-    cin >> m >> a >> b;
-    auto am = m - a;
-    auto mb = b - m;
-    if (am.len<LD>() + mb.len<LD>() == (am + mb).len<LD>()) {
+    Lvec a, b, c, d;
+    cin >> a >> b >> c >> d;
+    auto ac = c - a;
+    auto ab = b - a;
+    auto ad = d - a;
+
+    auto ca = a - c;
+    auto cd = d - c;
+    auto cb = b - c;
+
+    db(ac % ab);
+    db(ab % ad);
+    db(ca % cd);
+    db(cd % cb);
+    if ((ac % ab) * (ab % ad) >= 0 && (ca % cd) * (cd % cb) >= 0) {
         cout << "YES" << endl;
     } else {
         cout << "NO" << endl;
