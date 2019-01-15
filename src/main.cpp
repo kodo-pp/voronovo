@@ -487,7 +487,7 @@ int main()
         return 0;
     }
 
-    if ((oa % op) * (op % op) >= 0) {
+    if ((oa % op) * (op % ob) >= 0) {
         if (acos(oa * op / (oa.len<LD>() * op.len<LD>())) \
                 + acos(ob * op / (ob.len<LD>() * op.len<LD>())) > pi) {
             cout << "NO" << endl;
