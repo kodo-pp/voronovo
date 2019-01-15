@@ -490,7 +490,9 @@ int main()
     }
 
     if (ab % cd == 0) {
-        if (abs(ac.len<LD>() + cb.len<LD>() - ab.len<LD>()) < 1e-10) {
+        auto db = b - d;
+        if (abs(ac.len<LD>() + cb.len<LD>() - ab.len<LD>()) < 1e-10 \
+               || abs(ad.len<LD>() + db.len<LD>() - ab.len<LD>()) < 1e-10) {
             cout << "YES" << endl;
         } else {
             cout << "NO" << endl;
