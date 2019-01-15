@@ -471,12 +471,30 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    LD r1, a1, r2, a2;
-    cin >> r1 >> a1 >> r2 >> a2;
-    a1 = deg_to_rad(a1);
-    a2 = deg_to_rad(a2);
-    
-    Lvec v1 = Lvec(r1 * cos(a1), r1 * sin(a1));
-    Lvec v2 = Lvec(r2 * cos(a2), r2 * sin(a2));
-    cout << setprecision(10) << (v2 - v1).len<LD>() << endl;
+    Vec2<ll> a, o, b, p;
+    cin >> a >> o >> b >> p;
+    auto oa = a - o;
+    auto ob = b - o;
+    auto op = p - o;
+
+    if (oa % op == 0 && oa * op < 0) {
+        cout << "NO" << endl;
+        return 0;
+    }
+
+    if (ob % op == 0 && ob * op < 0) {
+        cout << "NO" << endl;
+        return 0;
+    }
+
+    if ((oa % op) * (op % op) >= 0) {
+        if (acos(oa * op / (oa.len<LD>() * op.len<LD>())) \
+                + acos(ob * op / (ob.len<LD>() * op.len<LD>())) > pi) {
+            cout << "NO" << endl;
+        } else {
+            cout << "YES" << endl;
+        }
+    } else {
+        cout << "NO" << endl;
+    }
 }
