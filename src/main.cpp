@@ -458,55 +458,10 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    Vec2<ll> a, b, c, d;
-    cin >> a >> b >> c >> d;
-    auto ac = c - a;
-    auto ab = b - a;
-    auto ad = d - a;
+    Vec2<ll> a, b(1, 0);
+    cin >> a;
+    auto polar_cos = static_cast<LD>(b * a) / (a.len<LD>() * b.len<LD>());
+    auto polar_sin = static_cast<LD>(b % a) / (a.len<LD>() * b.len<LD>());
 
-    auto ca = a - c;
-    auto cd = d - c;
-    auto cb = b - c;
-
-    if (a == b && c == d) {
-        cout << (a == c ? "YES" : "NO") << endl;
-        return 0;
-    }
-    if (a == b) {
-        if (abs(ca.len<LD>() + ad.len<LD>() - cd.len<LD>()) < 1e-10) {
-            cout << "YES" << endl;
-        } else {
-            cout << "NO" << endl;
-        }
-        return 0;
-    }
-    if (c == d) {
-        if (abs(ac.len<LD>() + cb.len<LD>() - ab.len<LD>()) < 1e-10) {
-            cout << "YES" << endl;
-        } else {
-            cout << "NO" << endl;
-        }
-        return 0;
-    }
-
-    if (ab % cd == 0) {
-        auto db = b - d;
-        if (abs(ac.len<LD>() + cb.len<LD>() - ab.len<LD>()) < 1e-10 \
-               || abs(ad.len<LD>() + db.len<LD>() - ab.len<LD>()) < 1e-10) {
-            cout << "YES" << endl;
-        } else {
-            cout << "NO" << endl;
-        }
-        return 0;
-    }
-
-    db(ac % ab);
-    db(ab % ad);
-    db(ca % cd);
-    db(cd % cb);
-    if ((ac % ab) * (ab % ad) >= 0 && (ca % cd) * (cd % cb) >= 0) {
-        cout << "YES" << endl;
-    } else {
-        cout << "NO" << endl;
-    }
+    cout << setprecision(10) << std::atan2(polar_sin, polar_cos) << endl;
 }
