@@ -25,6 +25,7 @@ using namespace std;
 
 using ll = long long;
 using ull = unsigned long long;
+using LD = long double;
 
 
 template <typename T>
@@ -345,32 +346,95 @@ public:
     vector <ll> v;
 };
 
+struct NonCollinearError: public std::exception
+{ };
+
+
+template <typename T>
+struct Vec2
+{
+    Vec2(const T& x = 0, const T& y = 0): x(x), y(y)
+    { }
+    T x;
+    T y;
+
+    T operator*(const Vec2<T>& rhs) const
+    {
+        return x * rhs.x + y * rhs.y;
+    }
+
+    T operator%(const Vec2<T>& rhs) const
+    {
+        return x * rhs.y - y * rhs.x;
+    }
+
+    Vec2<T> operator+(const Vec2<T>& rhs) const
+    {
+        return Vec2(x + rhs.x, y + rhs.y);
+    }
+
+    Vec2<T> operator-(const Vec2<T>& rhs) const
+    {
+        return Vec2(x - rhs.x, y - rhs.y);
+    }
+
+    Vec2<T> operator-() const
+    {
+        return Vec2(-x, -y);
+    }
+
+    Vec2<T> operator*(const T& k) const
+    {
+        return Vec2(x * k, y * k);
+    }
+
+    Vec2<T> operator/(const T& k) const
+    {
+        return Vec2(x / k, y / k);
+    }
+
+    T len_sq() const
+    {
+        return x * x + y * y;
+    }
+
+    T len() const
+    {
+        return sqrt(len_sq());
+    }
+};
+
+
+using Lvec = Vec2<LD>;
+
+template <typename T>
+istream& operator>>(istream& s, Vec2<T>& v)
+{
+    s >> v.x >> v.y;
+    return s;
+}
+
+template <typename T>
+ostream& operator<<(ostream& s, const Vec2<T>& v)
+{
+    s << v.x << ' ' << v.y;
+    return s;
+}
+
+
+template <typename T>
+T tri_area(const Vec2<T>& AB, const Vec2<T>& AC)
+{
+    return (AB % AC) / 2;
+}
+
 
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n, k;
-    cin >> n >> k;
-
-    vector<Edge> edges(k);
-    cin >> edges;
-
-    sort(edges.begin(), edges.end());
-
-    vector<ll> v(n + 1, 0);
-    vector<ll> weights;
-    Dsu dsu(v);
-    for (auto e : edges) {
-        db(e);
-        if (dsu.get(e.a) == dsu.get(e.b)) {
-            dbsx("Skip");
-            continue;
-        }
-        dbsx("Use");
-        dsu.join(e.a, e.b);
-        weights.push_back(e.w);
-    }
-    cout << *max_element(weights.begin(), weights.end()) << endl;
+    Lvec a, b;
+    cin >> a >> b;
+    cout << setprecision(10) << acos(a * b / (a.len() * b.len())) << endl;
 }
