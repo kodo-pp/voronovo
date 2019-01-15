@@ -27,6 +27,8 @@ using ll = long long;
 using ull = unsigned long long;
 using LD = long double;
 
+const LD pi = 3.141592653589793238462643383279502884L;
+
 
 template <typename T>
 istream& operator>>(istream& s, vector<T>& v)
@@ -458,10 +460,18 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
+    auto f = [](LD x) -> LD {
+        if (x < 0) {
+            return 2 * pi + x;
+        } else {
+            return x;
+        }
+    };
+
     Vec2<ll> a, b(1, 0);
     cin >> a;
     auto polar_cos = static_cast<LD>(b * a) / (a.len<LD>() * b.len<LD>());
     auto polar_sin = static_cast<LD>(b % a) / (a.len<LD>() * b.len<LD>());
 
-    cout << setprecision(10) << std::atan2(polar_sin, polar_cos) << endl;
+    cout << setprecision(10) << f(std::atan2(polar_sin, polar_cos)) << endl;
 }
