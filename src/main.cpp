@@ -438,6 +438,7 @@ T tri_area(const Vec2<T>& AB, const Vec2<T>& AC)
 template <typename T>
 tuple<T, T, T> make_line(const Vec2<T>& a, const Vec2<T>& b)
 {
+
     auto A = b.y - a.y;
     auto B = a.x - b.x;
     auto C = b % a;
@@ -457,7 +458,7 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    Lvec a, b, c, d;
+    Vec2<ll> a, b, c, d;
     cin >> a >> b >> c >> d;
     auto ac = c - a;
     auto ab = b - a;
@@ -466,6 +467,36 @@ int main()
     auto ca = a - c;
     auto cd = d - c;
     auto cb = b - c;
+
+    if (a == b && c == d) {
+        cout << (a == c ? "YES" : "NO") << endl;
+        return 0;
+    }
+    if (a == b) {
+        if (abs(ca.len<LD>() + ad.len<LD>() - cd.len<LD>()) < 1e-10) {
+            cout << "YES" << endl;
+        } else {
+            cout << "NO" << endl;
+        }
+        return 0;
+    }
+    if (c == d) {
+        if (abs(ac.len<LD>() + cb.len<LD>() - ab.len<LD>()) < 1e-10) {
+            cout << "YES" << endl;
+        } else {
+            cout << "NO" << endl;
+        }
+        return 0;
+    }
+
+    if (ab % cd == 0) {
+        if (abs(ac.len<LD>() + cb.len<LD>() - ab.len<LD>()) < 1e-10) {
+            cout << "YES" << endl;
+        } else {
+            cout << "NO" << endl;
+        }
+        return 0;
+    }
 
     db(ac % ab);
     db(ab % ad);
