@@ -398,9 +398,10 @@ struct Vec2
         return x * x + y * y;
     }
 
-    T len() const
+    template <typename Out>
+    Out len() const
     {
-        return sqrt(len_sq());
+        return sqrt(static_cast<Out>(len_sq()));
     }
 
     bool operator==(const Vec2<T>& rhs)
@@ -449,30 +450,30 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    Lvec m, a, b;
+    Vec2<ll> m, a, b;
     cin >> m >> a >> b;
     cout << setprecision(15);
     
     if (a == b) {
-        cout << '0' << endl;
+        cout << (a - m).len<LD>() << endl;
         return 0;
     }
 
-    LD A = 0, B = 0, C = 0;
+    ll A = 0, B = 0, C = 0;
     tie(A, B, C) = make_line(a, b);
 
-    Lvec normal(A, B);
-    Lvec fwd = m + normal;
+    Vec2<ll> normal(A, B);
+    Vec2<ll> fwd = m + normal;
 
-    Lvec ma = a - m;
-    Lvec mb = b - m;
-    Lvec mp = fwd - m;
+    Vec2<ll> ma = a - m;
+    Vec2<ll> mb = b - m;
+    Vec2<ll> mp = fwd - m;
 
     if ((ma % mp) * (mp % mb) > 0) {
-        cout << abs(A * m.x + B * m.y + C) / sqrt(A * A + B * B) << endl;
+        cout << static_cast<LD>(abs(A * m.x + B * m.y + C)) / sqrt(static_cast<LD>(A * A + B * B)) << endl;
         return 0;
     } else {
-        cout << min(ma.len(), mb.len()) << endl;
+        cout << min(ma.len<LD>(), mb.len<LD>()) << endl;
         return 0;
     }
 }
