@@ -455,23 +455,28 @@ bool are_lines_same(ll A1, ll B1, ll C1, ll A2, ll B2, ll C2)
 }
 
 
+LD deg_to_rad(LD deg)
+{
+    return deg / 180.0 * pi;
+}
+
+
+LD rad_to_deg(LD rad)
+{
+    return rad * 180.0 / pi;
+}
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    auto f = [](LD x) -> LD {
-        if (x < 0) {
-            return 2 * pi + x;
-        } else {
-            return x;
-        }
-    };
-
-    Vec2<ll> a, b(1, 0);
-    cin >> a;
-    auto polar_cos = static_cast<LD>(b * a) / (a.len<LD>() * b.len<LD>());
-    auto polar_sin = static_cast<LD>(b % a) / (a.len<LD>() * b.len<LD>());
-
-    cout << setprecision(10) << f(std::atan2(polar_sin, polar_cos)) << endl;
+    LD r1, a1, r2, a2;
+    cin >> r1 >> a1 >> r2 >> a2;
+    a1 = deg_to_rad(a1);
+    a2 = deg_to_rad(a2);
+    
+    Lvec v1 = Lvec(r1 * cos(a1), r1 * sin(a1));
+    Lvec v2 = Lvec(r2 * cos(a2), r2 * sin(a2));
+    cout << setprecision(10) << (v2 - v1).len<LD>() << endl;
 }
