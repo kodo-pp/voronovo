@@ -457,11 +457,13 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll A, B, C;
-    cin >> A >> B >> C;
-
-    Vec2<ll> m;
-    cin >> m;
-    
-    cout << B << ' ' << -A << ' ' << A * m.y - B * m.x << endl;
+    Vec2<ll> m, a, b;
+    cin >> m >> a >> b;
+    auto am = m - a;
+    auto mb = b - m;
+    if (am.len<LD>() + mb.len<LD>() == (am + mb).len<LD>()) {
+        cout << "YES" << endl;
+    } else {
+        cout << "NO" << endl;
+    }
 }
