@@ -1,3 +1,21 @@
+//    Olymp
+//    Copyright (C) 2019  Alexander Korzun
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Affero General Public License as
+//    published by the Free Software Foundation, either version 3 of the
+//    License, or (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+//
+//    You should have received a copy of the GNU Affero General Public License
+//    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+
+
 #include <bits/stdc++.h>
 
 #ifdef AAA
@@ -406,6 +424,21 @@ struct Vec2
         return sqrt(static_cast<Out>(len_sq()));
     }
 
+    LD sin(const Vec2<T>& rhs) const
+    {
+        return (*this % rhs) / (len<LD>() * rhs.len<LD>());
+    }
+
+    LD cos(const Vec2<T>& rhs) const
+    {
+        return (*this * rhs) / (len<LD>() * rhs.len<LD>());
+    }
+
+    LD tan(const Vec2<T>& rhs) const
+    {
+        return this->sin(rhs) / this->cos(rhs);
+    }
+
     bool operator==(const Vec2<T>& rhs)
     {
         return x == rhs.x && y == rhs.y;
@@ -466,6 +499,8 @@ LD rad_to_deg(LD rad)
     return rad * 180.0 / pi;
 }
 
+
+
 int main()
 {
     ios_base::sync_with_stdio(false);
@@ -473,5 +508,39 @@ int main()
     
     Lvec a, b, c;
     cin >> a >> b >> c;
-    cout << setprecision(10) << (a + b + c) / 3.0 << endl;
+    cout << setprecision(10);
+
+    auto ab = b - a;
+    auto ac = c - a;
+    auto ba = a - b;
+    auto bc = c - b;
+    auto ca = a - c;
+    auto cb = b - c;
+
+    if (ab * ac == 0) {
+        cout << a << endl;
+        return 0;
+    }
+
+    if (ba * bc == 0) {
+        cout << b << endl;
+        return 0;
+    }
+
+    if (ca * cb == 0) {
+        cout << c << endl;
+        return 0;
+    }
+
+    LD tanA = ab.tan(ac);
+    LD tanB = ba.tan(bc);
+    LD tanC = ca.tan(cb);
+    db(tanA);
+    db(tanB);
+    db(tanC);
+
+    auto x = (a.x * tanA + b.x * tanB + c.x * tanC) / (tanA + tanB + tanC);
+    auto y = (a.y * tanA + b.y * tanB + c.y * tanC) / (tanA + tanB + tanC);
+
+    cout << x << ' ' << y << endl;
 }
