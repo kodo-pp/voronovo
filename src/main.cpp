@@ -471,30 +471,7 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    Vec2<ll> a, o, b, p;
-    cin >> a >> o >> b >> p;
-    auto oa = a - o;
-    auto ob = b - o;
-    auto op = p - o;
-
-    if (oa % op == 0 && oa * op < 0) {
-        cout << "NO" << endl;
-        return 0;
-    }
-
-    if (ob % op == 0 && ob * op < 0) {
-        cout << "NO" << endl;
-        return 0;
-    }
-
-    if ((oa % op) * (op % ob) >= 0) {
-        if (acos(oa * op / (oa.len<LD>() * op.len<LD>())) \
-                + acos(ob * op / (ob.len<LD>() * op.len<LD>())) > pi) {
-            cout << "NO" << endl;
-        } else {
-            cout << "YES" << endl;
-        }
-    } else {
-        cout << "NO" << endl;
-    }
+    Lvec a, b, c;
+    cin >> a >> b >> c;
+    cout << setprecision(10) << (a + b + c) / 3.0 << endl;
 }
