@@ -441,7 +441,14 @@ tuple<T, T, T> make_line(const Vec2<T>& a, const Vec2<T>& b)
     auto A = b.y - a.y;
     auto B = a.x - b.x;
     auto C = b % a;
+    // C = b.x * a.y - b.y * a.x
     return make_tuple(A, B, C);
+}
+
+
+bool are_lines_same(ll A1, ll B1, ll C1, ll A2, ll B2, ll C2)
+{
+    return A1 * B2 == A2 * B1 && A1 * C2 == A2 * C1;
 }
 
 
@@ -449,9 +456,25 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
+    Vec2<ll> a, b, c, d;
+    cin >> a >> b >> c >> d;
+    ll A1, B1, C1, A2, B2, C2;
+    tie(A1, B1, C1) = make_line(a, b);
+    tie(A2, B2, C2) = make_line(c, d);
 
-    ll x, y, a, b;
-    cin >> x >> y >> a >> b;
-    cout << a << ' ' << b << ' ' << -a * x - b * y << endl;
-    //cout << setprecision(15);
+    if (are_lines_same(A1, B1, C1, A2, B2, C2)) {
+        cout << '2' << endl;
+        return 0;
+    }
+    
+    auto div = A1 * B2 - A2 * B1;
+    if (div == 0) {
+        cout << '0' << endl;
+        return 0;
+    } else {
+        auto x = -(C1 * B2 - C2 * B1) / static_cast<LD>(div);
+        auto y = -(A1 * C2 - A2 * C1) / static_cast<LD>(div);
+        cout << "1 " << setprecision(10) << x << ' ' << y << endl;
+        return 0;
+    }
 }
