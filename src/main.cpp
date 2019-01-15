@@ -456,25 +456,14 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    Vec2<ll> a, b, c, d;
-    cin >> a >> b >> c >> d;
-    ll A1, B1, C1, A2, B2, C2;
-    tie(A1, B1, C1) = make_line(a, b);
-    tie(A2, B2, C2) = make_line(c, d);
-
-    if (are_lines_same(A1, B1, C1, A2, B2, C2)) {
-        cout << '2' << endl;
-        return 0;
-    }
     
-    auto div = A1 * B2 - A2 * B1;
-    if (div == 0) {
-        cout << '0' << endl;
-        return 0;
+    Lvec p, q;
+    cin >> p >> q;
+    LD A, B, C;
+    cin >> A >> B >> C;
+    if ((A * p.x + B * p.y + C) * (A * q.x + B * q.y + C) > 0) {
+        cout << "YES" << endl;
     } else {
-        auto x = -(C1 * B2 - C2 * B1) / static_cast<LD>(div);
-        auto y = -(A1 * C2 - A2 * C1) / static_cast<LD>(div);
-        cout << "1 " << setprecision(10) << x << ' ' << y << endl;
-        return 0;
+        cout << "NO" << endl;
     }
 }
