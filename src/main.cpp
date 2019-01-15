@@ -450,12 +450,8 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    Vec2<ll> a, b;
-    cin >> a >> b;
-    cout << setprecision(15);
-
-    ll A = 0, B = 0, C = 0;
-    tie(A, B, C) = make_line(a, b);
-
-    cout << A << ' ' << B << ' ' << C << endl;
+    ll x, y, a, b;
+    cin >> x >> y >> a >> b;
+    cout << a << ' ' << b << ' ' << -a * x - b * y << endl;
+    //cout << setprecision(15);
 }
