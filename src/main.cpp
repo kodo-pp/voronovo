@@ -506,36 +506,37 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n;
-    cin >> n;
-    vector<tuple<ll, ll>> v;
+    ll n, m;
+    cin >> n >> m;
+    vector<tuple<ll, ll, ll>> v;
     for (ll i = 0; i < n; ++i) {
         ll a, b;
         cin >> a >> b;
-        v.emplace_back(a, 0);
-        v.emplace_back(b+1, -1);
+        v.emplace_back(a, -1, 0xBAD);
+        v.emplace_back(b, 1, 0xBAD);
+    }
+
+    for (ll i = 0; i < m; ++i) {
+        ll a;
+        cin >> a;
+        v.emplace_back(a, 0, i);
     }
 
     sort(v.begin(), v.end());
 
-    ll sum = 0;
-    ll nest = 0;
-    ll prev_time = 0xBAD;
-    for (auto& ev : v) {
-        ll time, type;
-        tie(time, type) = ev;
 
-        if (type == 0) {
-            if (nest == 0) {
-                prev_time = time;
-            }
-            ++nest;
+    vector<ll> ans(m, 0xBAD);
+    ll count = 0;
+    for (auto& ev : v) {
+        ll time, type, num;
+        tie(time, type, num) = ev;
+        if (type == -1) {
+            ++count;
+        } else if (type == 0) {
+            ans[num] = count;
         } else {
-            --nest;
-            if (nest == 0) {
-                sum += time - prev_time;
-            }
+            --count;
         }
     }
-    cout << sum << endl;
+    cout << ans << endl;
 }
