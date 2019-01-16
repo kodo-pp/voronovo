@@ -506,41 +506,46 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    Lvec a, b, c;
-    cin >> a >> b >> c;
-    cout << setprecision(10);
-
-    auto ab = b - a;
-    auto ac = c - a;
-    auto ba = a - b;
-    auto bc = c - b;
-    auto ca = a - c;
-    auto cb = b - c;
-
-    if (abs(ab * ac) < 1e-9) {
-        cout << a << endl;
-        return 0;
+    ll k, n;
+    cin >> k >> n;
+    vector<tuple<ll, ll, ll>> v;
+    for (ll i = 0; i < n; ++i) {
+        ll a, b;
+        cin >> a >> b;
+        v.emplace_back(a, 0, i);
+        v.emplace_back(b, 1, i);
     }
 
-    if (abs(ba * bc) < 1e-9) {
-        cout << b << endl;
-        return 0;
+    sort(v.begin(), v.end());
+
+    set<ll> free;
+    map<ll, ll> used;
+    for (ll i = 1; i <= k; ++i) {
+        free.insert(i);
     }
 
-    if (abs(ca * cb) < 1e-9) {
-        cout << c << endl;
-        return 0;
+    vector<ll> ans(n, 0);
+
+    for (auto& ev : v) {
+        ll time, type, num;
+        tie(time, type, num) = ev;
+        if (type == 1) {
+            ll dead_end = used.at(num);
+            used.erase(num);
+            free.insert(dead_end);
+        } else {
+            if (free.empty()) {
+                cout << "0 " << num + 1 << endl;
+                return 0;
+            }
+            ll first_free = *free.begin();
+            free.erase(first_free);
+            used.emplace(num, first_free);
+            ans[num] = first_free;
+        }
     }
 
-    LD tanA = ab.tan(ac);
-    LD tanB = ba.tan(bc);
-    LD tanC = ca.tan(cb);
-    db(tanA);
-    db(tanB);
-    db(tanC);
-
-    auto x = (a.x * tanA + b.x * tanB + c.x * tanC) / (tanA + tanB + tanC);
-    auto y = (a.y * tanA + b.y * tanB + c.y * tanC) / (tanA + tanB + tanC);
-
-    cout << x << ' ' << y << endl;
+    for (auto& i : ans) {
+        cout << i << endl;
+    }
 }
