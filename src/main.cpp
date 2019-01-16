@@ -501,42 +501,116 @@ LD rad_to_deg(LD rad)
 
 
 
+struct Range
+{
+    Range(ll begin=0xBAD, ll end=0xBAD, ll order=0xBAD, ll ob=0xBAD, ll oe=0xBAD):
+        begin(begin),
+        end(end),
+        order(order),
+        back(nullptr),
+        orig_begin(ob),
+        orig_end(oe)
+    { }
+    ll begin;
+    ll end;
+    ll orig_begin;
+    ll orig_end;
+    ll order;
+    Range* back;
+    bool operator<(const Range& rhs) const
+    {
+        return order < rhs.order;
+    }
+};
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n, m;
-    cin >> n >> m;
-    vector<tuple<ll, ll, ll>> v;
-    for (ll i = 0; i < n; ++i) {
+    ll m;
+    cin >> m;
+    vector<Range> ranges;
+    ll min_l;
+    ll max_r;
+    while (true) {
         ll a, b;
         cin >> a >> b;
-        v.emplace_back(min(a, b), -1, 0xBAD);
-        v.emplace_back(max(a, b), 1, 0xBAD);
+        if (a == 0 && b == 0) {
+            break;
+        }
+        if (a < 0 && b < 0) {
+            continue;
+        }
+        if (a > m && b > m) {
+            continue;
+        }
+        ll ma = max<ll>(a, 0);
+        ll mb = min<ll>(b, m);
+        min_l = min(min_l, ma);
+        max_r = max(max_r, mb);
+        ranges.emplace_back(ma, mb, ma == 0 ? 0 : 999999999999999LL, a, b);
     }
+    if (min_l > 0 || max_r < m) {
+        cout << "No solution" << endl;
+        return 0;
+    }
+    ll n = ranges.size();
 
-    for (ll i = 0; i < m; ++i) {
-        ll a;
-        cin >> a;
-        v.emplace_back(a, 0, i);
+    vector<tuple<ll, ll, ll>> v;
+    for (ll i = 0; i < n; ++i) {
+        v.emplace_back(ranges[i].begin, -1, i);
+        v.emplace_back(ranges[i].end, 1, i);
     }
 
     sort(v.begin(), v.end());
+    set<pair<Range, ll>> active_ranges;
 
-
-    vector<ll> ans(m, 0xBAD);
-    ll count = 0;
     for (auto& ev : v) {
-        ll time, type, num;
-        tie(time, type, num) = ev;
+        ll time, type, range_num;
+        tie(time, type, range_num) = ev;
         if (type == -1) {
-            ++count;
-        } else if (type == 0) {
-            ans[num] = count;
+            if (ranges[range_num].order != 0) {
+                if (active_ranges.empty()) {
+                    cout << "No solution" << endl;
+                    return 0;
+                }
+                ll arange_idx = active_ranges.begin()->second;
+                ranges[range_num].back = &ranges[arange_idx];
+                ranges[range_num].order = ranges[arange_idx].order + 1;
+            }
+            active_ranges.insert({ranges[range_num], range_num});
         } else {
-            --count;
+            active_ranges.erase({ranges[range_num], range_num});
         }
     }
-    cout << ans << endl;
+
+    ll idx = 0;
+    ll min_order = 9999999999999999LL;
+    for (ll i = 0; i < n; ++i) {
+        db(i);
+        dbx(ranges[i].end);
+        dbx(ranges[i].order);
+        dbx(min_order);
+        dbx(idx);
+        if (ranges[i].end == m && ranges[i].order < min_order) {
+            min_order = ranges[i].order;
+            idx = i;
+        }
+    }
+    db(idx);
+
+    vector<Range*> ans;
+    ans.push_back(&ranges[idx]);
+    while (true) {
+        if (ans.back()->back == nullptr) {
+            break;
+        }
+        ans.push_back(ans.back()->back);
+    }
+    
+    cout << ans.size() << endl;
+    for (Range* i : ans) {
+        cout << i->orig_begin << ' ' << i->orig_end << endl;
+    }
 }
