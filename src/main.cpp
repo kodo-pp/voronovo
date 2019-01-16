@@ -531,8 +531,8 @@ int main()
     ll m;
     cin >> m;
     vector<Range> ranges;
-    ll min_l;
-    ll max_r;
+    ll min_l = 999999999999999LL;
+    ll max_r = -999999999999999LL;
     while (true) {
         ll a, b;
         cin >> a >> b;
@@ -609,8 +609,16 @@ int main()
         ans.push_back(ans.back()->back);
     }
     
-    cout << ans.size() << endl;
-    for (Range* i : ans) {
-        cout << i->orig_begin << ' ' << i->orig_end << endl;
+    vector<pair<ll, ll>> super_ans;
+
+    for (Range* r : ans) {
+        super_ans.emplace_back(r->orig_begin, r->orig_end);
+    }
+
+    sort(super_ans.begin(), super_ans.end());
+
+    cout << super_ans.size() << endl;
+    for (auto& be : super_ans) {
+        cout << be.first << ' ' << be.second << endl;
     }
 }
