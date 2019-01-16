@@ -517,17 +517,17 @@ int main()
     auto ca = a - c;
     auto cb = b - c;
 
-    if (ab * ac == 0) {
+    if (abs(ab * ac) < 1e-9) {
         cout << a << endl;
         return 0;
     }
 
-    if (ba * bc == 0) {
+    if (abs(ba * bc) < 1e-9) {
         cout << b << endl;
         return 0;
     }
 
-    if (ca * cb == 0) {
+    if (abs(ca * cb) < 1e-9) {
         cout << c << endl;
         return 0;
     }
