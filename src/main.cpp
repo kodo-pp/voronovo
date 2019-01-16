@@ -506,46 +506,36 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll k, n;
-    cin >> k >> n;
-    vector<tuple<ll, ll, ll>> v;
+    ll n;
+    cin >> n;
+    vector<tuple<ll, ll>> v;
     for (ll i = 0; i < n; ++i) {
         ll a, b;
         cin >> a >> b;
-        v.emplace_back(a, 0, i);
-        v.emplace_back(b, 1, i);
+        v.emplace_back(a, 0);
+        v.emplace_back(b+1, -1);
     }
 
     sort(v.begin(), v.end());
 
-    set<ll> free;
-    map<ll, ll> used;
-    for (ll i = 1; i <= k; ++i) {
-        free.insert(i);
-    }
-
-    vector<ll> ans(n, 0);
-
+    ll sum = 0;
+    ll nest = 0;
+    ll prev_time = 0xBAD;
     for (auto& ev : v) {
-        ll time, type, num;
-        tie(time, type, num) = ev;
-        if (type == 1) {
-            ll dead_end = used.at(num);
-            used.erase(num);
-            free.insert(dead_end);
-        } else {
-            if (free.empty()) {
-                cout << "0 " << num + 1 << endl;
-                return 0;
+        ll time, type;
+        tie(time, type) = ev;
+
+        if (type == 0) {
+            if (nest == 0) {
+                prev_time = time;
             }
-            ll first_free = *free.begin();
-            free.erase(first_free);
-            used.emplace(num, first_free);
-            ans[num] = first_free;
+            ++nest;
+        } else {
+            --nest;
+            if (nest == 0) {
+                sum += time - prev_time;
+            }
         }
     }
-
-    for (auto& i : ans) {
-        cout << i << endl;
-    }
+    cout << sum << endl;
 }
