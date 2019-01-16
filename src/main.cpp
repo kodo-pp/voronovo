@@ -512,8 +512,8 @@ int main()
     for (ll i = 0; i < n; ++i) {
         ll a, b;
         cin >> a >> b;
-        v.emplace_back(a, -1, 0xBAD);
-        v.emplace_back(b, 1, 0xBAD);
+        v.emplace_back(min(a, b), -1, 0xBAD);
+        v.emplace_back(max(a, b), 1, 0xBAD);
     }
 
     for (ll i = 0; i < m; ++i) {
