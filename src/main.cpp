@@ -505,18 +505,22 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n, m;
-    cin >> n >> m;
-    vector<ll> w(n), c(n);
-    cin >> w >> c;
+    ll n;
+    cin >> n;
+    vector<ll> a(n);
+    cin >> a;
+    ll m;
+    cin >> m;
+    vector<ll> b(m);
+    cin >> b;
 
     vector<vector<ll>> d(n+1, vector<ll>(m+1, 0));
-    for (ll item = 1; item <= n; ++item) {
-        for (ll max_m = 1; max_m <= m; ++max_m) {
-            if (w[item-1] > max_m) {
-                d[item][max_m] = d[item-1][max_m];
+    for (ll i = 1; i <= n; ++i) {
+        for (ll j = 1; j <= m; ++j) {
+            if (a[i-1] == b[j-1]) {
+                d[i][j] = d[i-1][j-1] + 1;
             } else {
-                d[item][max_m] = max(d[item-1][max_m], d[item-1][max_m-w[item-1]] + c[item-1]);
+                d[i][j] = max(d[i-1][j], d[i][j-1]);
             }
         }
     }
@@ -526,18 +530,21 @@ int main()
     }
 
     vector<ll> ans;
-    ll item = n, max_m = m;
-    while (item > 0 && max_m > 0) {
-        if (d[item][max_m] == d[item-1][max_m]) {
-            --item;
+    ll i = n, j = m;
+    while (i > 0 && j > 0) {
+        if (d[i][j] - 1 == d[i-1][j-1]) {
+            ans.push_back(a[i-1]);
+            --i;
+            --j;
         } else {
-            ans.push_back(item);
-            max_m -= w[item-1];
-            --item;
+            if (d[i-1][j] > d[i][j-1]) {
+                --i;
+            } else {
+                --j;
+            }
         }
     }
-    sort(ans.begin(), ans.end());
-    output_separator = "\n";
+    reverse(ans.begin(), ans.end());
     cout << ans << endl;
 }
 
