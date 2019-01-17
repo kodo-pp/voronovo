@@ -499,6 +499,45 @@ LD rad_to_deg(LD rad)
     return rad * 180.0 / pi;
 }
 
+struct Rect
+{
+    Rect(ll x1, ll y1, ll x2, ll y2): x1(x1), y1(y1), x2(x2), y2(y2)
+    { }
+    ll x1, y1, x2, y2;
+};
+
+ll get_y(const vector<Rect>& rects, ll x)
+{
+    vector<tuple<ll, ll>> vy;
+
+    for (auto& rect : rects) {
+        if (rect.x1 < x && rect.x2 >= x) {
+            vy.emplace_back(rect.y1, -1);
+            vy.emplace_back(rect.y2, 1);
+        }
+    }
+
+    sort(vy.begin(), vy.end());
+
+    ll lasty = 0;
+    ll sum = 0;
+    ll cnt = 0;
+    for (auto& evy : vy) {
+        ll y, type;
+        tie(y, type) = evy;
+        if (cnt != 0) {
+            sum += y - lasty;
+        }
+        lasty = y;
+        if (type == -1) {
+            ++cnt;
+        } else {
+            --cnt;
+        }
+    }
+    return sum;
+}
+
 int main()
 {
     ios_base::sync_with_stdio(false);
@@ -507,48 +546,28 @@ int main()
     ll n;
     cin >> n;
 
-    vector<tuple<tuple<ll, ll, ll>, ll, ll>> v;
+    vector<tuple<ll, ll, ll>> vx;
+    vector<Rect> rects;
     for (ll i = 0; i < n; ++i) {
-        ll birth_day, birth_month, birth_year;
-        cin >> birth_day >> birth_month >> birth_year;
-        ll death_day, death_month, death_year;
-        cin >> death_day >> death_month >> death_year;
-        auto death = make_tuple(death_year, death_month, death_day);
-
-        auto yo18 = make_tuple(birth_year + 18, birth_month, birth_day);
-        auto yo80 = make_tuple(birth_year + 80, birth_month, birth_day);
-        if (death <= yo18) {
-            continue;
-        }
-        
-        v.emplace_back(yo18, 1, i);
-        v.emplace_back(min(yo80, death), -1, i);
+        ll x1, y1, x2, y2;
+        cin >> x1 >> y1 >> x2 >> y2;
+        rects.emplace_back(x1, y1, x2, y2);
+        vx.emplace_back(x1, -1, i);
+        vx.emplace_back(x2, 1, i);
     }
 
-    sort(v.begin(), v.end());
-    if (v.empty()) {
-        cout << 0 << endl;
-        return 0;
+    sort(vx.begin(), vx.end());
+    
+    ll lastx = 0;
+    ll sum = 0;
+    for (auto& evx : vx) {
+        ll x, type, num;
+        tie(x, type, num) = evx;
+        ll dx = x - lastx;
+        lastx = x;
+        ll dy = get_y(rects, x);
+        sum += dx * dy;
     }
-
-    set<ll> people;
-    bool peak = false;
-    for (auto& ev : v) {
-        tuple<ll, ll, ll> date;
-        ll type, person;
-        tie(date, type, person) = ev;
-        if (type == -1) {
-            if (peak) {
-                for (auto& i : people) {
-                    cout << i + 1 << ' ';
-                }
-                cout << endl;
-            }
-            peak = false;
-            people.erase(person);
-        } else {
-            peak = true;
-            people.insert(person);
-        }
-    }
+    cout << sum << endl;
 }
+
