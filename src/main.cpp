@@ -504,18 +504,21 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n, k;
+    int n, k;
     cin >> n >> k;
     string s;
     cin >> s;
 
-    vector<vector<ll>> d(n, vector<ll>(n, 0));
-    for (ll i = 1, j = 0;  i < n;  ++i, ++j) { 
+    vector<vector<ll>> d(n);
+    for(int i = 0; i < n; ++i) {
+        d[i].resize(i + 1);
+    }
+    for (int i = 1, j = 0;  i < n;  ++i, ++j) { 
         d[i][j] = s[i] == s[j] ? 0 : 1;
     }
 
-    for (ll i_base = 2; i_base < n; ++i_base) {
-        for (ll i = i_base, j = 0;  i < n;  ++i, ++j) { 
+    for (int i_base = 2; i_base < n; ++i_base) {
+        for (int i = i_base, j = 0;  i < n;  ++i, ++j) { 
             d[i][j] = d[i-1][j+1] + (s[i] == s[j] ? 0 : 1);
         }
     }
@@ -524,9 +527,9 @@ int main()
         db(i);
     }
 
-    ll count = 0;
-    for (ll i_base = 0; i_base < n; ++i_base) {
-        for (ll i = i_base, j = 0;  i < n;  ++i, ++j) { 
+    int count = 0;
+    for (int i_base = 0; i_base < n; ++i_base) {
+        for (int i = i_base, j = 0;  i < n;  ++i, ++j) { 
             if (d[i][j] <= k) {
                 ++count;
             }
