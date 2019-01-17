@@ -532,7 +532,7 @@ int main()
     vector<ll> ans;
     ll i = n, j = m;
     while (i > 0 && j > 0) {
-        if (d[i][j] - 1 == d[i-1][j-1]) {
+        if (a[i-1] == b[j-1]) {
             ans.push_back(a[i-1]);
             --i;
             --j;
