@@ -499,49 +499,45 @@ LD rad_to_deg(LD rad)
     return rad * 180.0 / pi;
 }
 
-struct Range
-{
-    Range(ll begin, ll end, ll i): begin(begin), end(end), i(i)
-    { }
-    ll begin;
-    ll end;
-    ll i;
-};
-
 
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n;
-    cin >> n;
+    ll n, m;
+    cin >> n >> m;
+    vector<ll> w(n), c(n);
+    cin >> w >> c;
 
-    ll global_c;
-
-    vector<Range> v;
-    for (ll i = 0; i < n; ++i) {
-        ll a, L, c;
-        cin >> a >> L >> c;
-        global_c = c;
-        v.emplace_back(a, a + L, i);
+    vector<vector<ll>> d(n+1, vector<ll>(m+1, 0));
+    for (ll item = 1; item <= n; ++item) {
+        for (ll max_m = 1; max_m <= m; ++max_m) {
+            if (w[item-1] > max_m) {
+                d[item][max_m] = d[item-1][max_m];
+            } else {
+                d[item][max_m] = max(d[item-1][max_m], d[item-1][max_m-w[item-1]] + c[item-1]);
+            }
+        }
     }
 
-    sort(v.begin(), v.end(), [](const Range& a, const Range& b) {
-        return a.end < b.end;
-    });
+    for (auto& i : d) {
+        db(i);
+    }
 
     vector<ll> ans;
-    ll max_r = 0;
-    for (auto& i : v) {
-        if (i.begin < max_r) {
-            continue;
+    ll item = n, max_m = m;
+    while (item > 0 && max_m > 0) {
+        if (d[item][max_m] == d[item-1][max_m]) {
+            --item;
+        } else {
+            ans.push_back(item);
+            max_m -= w[item-1];
+            --item;
         }
-        max_r = i.end;
-        ans.push_back(i.i + 1);
     }
-    cout << global_c * ans.size() << endl;
-    cout << ans.size() << endl;
+    sort(ans.begin(), ans.end());
+    output_separator = "\n";
     cout << ans << endl;
 }
 
