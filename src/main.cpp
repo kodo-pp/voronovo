@@ -509,41 +509,31 @@ int main()
     cin >> n;
     vector<ll> a(n);
     cin >> a;
-    ll m;
-    cin >> m;
-    vector<ll> b(m);
-    cin >> b;
 
-    vector<vector<ll>> d(n+1, vector<ll>(m+1, 0));
-    for (ll i = 1; i <= n; ++i) {
-        for (ll j = 1; j <= m; ++j) {
-            if (a[i-1] == b[j-1]) {
-                d[i][j] = d[i-1][j-1] + 1;
-            } else {
-                d[i][j] = max(d[i-1][j], d[i][j-1]);
+    vector<ll> d(n, 1), p(n, -1);
+    for (ll i = 1; i < n; ++i) {
+        ll maxi = -1;
+        ll maxv = 0LL;
+        for (ll j = 0; j < i; ++j) {
+            if (a[j] < a[i] && d[j] >= maxv) {
+                maxv = d[j];
+                maxi = j;
             }
         }
+        p[i] = maxi;
+        d[i] = maxv + 1;
     }
-
-    for (auto& i : d) {
-        db(i);
-    }
+    db(d);
+    db(p);
 
     vector<ll> ans;
-    ll i = n, j = m;
-    while (i > 0 && j > 0) {
-        if (a[i-1] == b[j-1]) {
-            ans.push_back(a[i-1]);
-            --i;
-            --j;
-        } else {
-            if (d[i-1][j] > d[i][j-1]) {
-                --i;
-            } else {
-                --j;
-            }
-        }
+    ll x = n - 1;
+    while (p[x] >= 0) {
+        ans.push_back(a[x]);
+        x = p[x];
     }
+    ans.push_back(a[x]);
+
     reverse(ans.begin(), ans.end());
     cout << ans << endl;
 }
