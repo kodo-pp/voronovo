@@ -499,44 +499,15 @@ LD rad_to_deg(LD rad)
     return rad * 180.0 / pi;
 }
 
-struct Rect
+struct Range
 {
-    Rect(ll x1, ll y1, ll x2, ll y2): x1(x1), y1(y1), x2(x2), y2(y2)
+    Range(ll begin, ll end, ll i): begin(begin), end(end), i(i)
     { }
-    ll x1, y1, x2, y2;
+    ll begin;
+    ll end;
+    ll i;
 };
 
-ll get_y(const vector<Rect>& rects, ll x)
-{
-    vector<tuple<ll, ll>> vy;
-
-    for (auto& rect : rects) {
-        if (rect.x1 < x && rect.x2 >= x) {
-            vy.emplace_back(rect.y1, -1);
-            vy.emplace_back(rect.y2, 1);
-        }
-    }
-
-    sort(vy.begin(), vy.end());
-
-    ll lasty = 0;
-    ll sum = 0;
-    ll cnt = 0;
-    for (auto& evy : vy) {
-        ll y, type;
-        tie(y, type) = evy;
-        if (cnt != 0) {
-            sum += y - lasty;
-        }
-        lasty = y;
-        if (type == -1) {
-            ++cnt;
-        } else {
-            --cnt;
-        }
-    }
-    return sum;
-}
 
 int main()
 {
@@ -546,28 +517,31 @@ int main()
     ll n;
     cin >> n;
 
-    vector<tuple<ll, ll, ll>> vx;
-    vector<Rect> rects;
+    ll global_c;
+
+    vector<Range> v;
     for (ll i = 0; i < n; ++i) {
-        ll x1, y1, x2, y2;
-        cin >> x1 >> y1 >> x2 >> y2;
-        rects.emplace_back(x1, y1, x2, y2);
-        vx.emplace_back(x1, -1, i);
-        vx.emplace_back(x2, 1, i);
+        ll a, L, c;
+        cin >> a >> L >> c;
+        global_c = c;
+        v.emplace_back(a, a + L, i);
     }
 
-    sort(vx.begin(), vx.end());
-    
-    ll lastx = 0;
-    ll sum = 0;
-    for (auto& evx : vx) {
-        ll x, type, num;
-        tie(x, type, num) = evx;
-        ll dx = x - lastx;
-        lastx = x;
-        ll dy = get_y(rects, x);
-        sum += dx * dy;
+    sort(v.begin(), v.end(), [](const Range& a, const Range& b) {
+        return a.end < b.end;
+    });
+
+    vector<ll> ans;
+    ll max_r = 0;
+    for (auto& i : v) {
+        if (i.begin < max_r) {
+            continue;
+        }
+        max_r = i.end;
+        ans.push_back(i.i + 1);
     }
-    cout << sum << endl;
+    cout << global_c * ans.size() << endl;
+    cout << ans.size() << endl;
+    cout << ans << endl;
 }
 
