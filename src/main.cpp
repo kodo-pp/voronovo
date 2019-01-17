@@ -499,48 +499,56 @@ LD rad_to_deg(LD rad)
     return rad * 180.0 / pi;
 }
 
-
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n, d;
-    cin >> n >> d;
+    ll n;
+    cin >> n;
 
-    vector<pair<ll, ll>> students;
-
-    vector<tuple<ll, ll>> v;
+    vector<tuple<tuple<ll, ll, ll>, ll, ll>> v;
     for (ll i = 0; i < n; ++i) {
-        ll x;
-        cin >> x;
-        students.emplace_back(x, i);
+        ll birth_day, birth_month, birth_year;
+        cin >> birth_day >> birth_month >> birth_year;
+        ll death_day, death_month, death_year;
+        cin >> death_day >> death_month >> death_year;
+        auto death = make_tuple(death_year, death_month, death_day);
+
+        auto yo18 = make_tuple(birth_year + 18, birth_month, birth_day);
+        auto yo80 = make_tuple(birth_year + 80, birth_month, birth_day);
+        if (death <= yo18) {
+            continue;
+        }
         
-        v.emplace_back(x, -1);
-        v.emplace_back(x + d, 1);
+        v.emplace_back(yo18, 1, i);
+        v.emplace_back(min(yo80, death), -1, i);
     }
 
     sort(v.begin(), v.end());
-    sort(students.begin(), students.end());
+    if (v.empty()) {
+        cout << 0 << endl;
+        return 0;
+    }
 
-    ll max_count = 0;
-    ll count = 0;
+    set<ll> people;
+    bool peak = false;
     for (auto& ev : v) {
-        ll time, type;
-        tie(time, type) = ev;
+        tuple<ll, ll, ll> date;
+        ll type, person;
+        tie(date, type, person) = ev;
         if (type == -1) {
-            ++count;
-            max_count = max(max_count, count);
+            if (peak) {
+                for (auto& i : people) {
+                    cout << i + 1 << ' ';
+                }
+                cout << endl;
+            }
+            peak = false;
+            people.erase(person);
         } else {
-            --count;
+            peak = true;
+            people.insert(person);
         }
     }
-
-    vector<ll> ans(n, 0xBAD);
-    cout << max_count << endl;
-    for (ll i = 0; i < n; ++i) {
-        ans[students[i].second] = i % max_count + 1;
-    }
-
-    cout << ans << endl;
 }
