@@ -527,7 +527,7 @@ int main()
     db(p);
 
     vector<ll> ans;
-    ll x = n - 1;
+    ll x = max_element(d.begin(), d.end()) - d.begin();
     while (p[x] >= 0) {
         ans.push_back(a[x]);
         x = p[x];
