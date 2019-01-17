@@ -499,42 +499,39 @@ LD rad_to_deg(LD rad)
     return rad * 180.0 / pi;
 }
 
-
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n;
-    cin >> n;
-    vector<ll> a(n);
-    cin >> a;
+    ll n, k;
+    cin >> n >> k;
+    string s;
+    cin >> s;
 
-    vector<ll> d(n, 1), p(n, -1);
-    for (ll i = 1; i < n; ++i) {
-        ll maxi = -1;
-        ll maxv = 0LL;
-        for (ll j = 0; j < i; ++j) {
-            if (a[j] < a[i] && d[j] >= maxv) {
-                maxv = d[j];
-                maxi = j;
+    vector<vector<ll>> d(n, vector<ll>(n, 0));
+    for (ll i = 1, j = 0;  i < n;  ++i, ++j) { 
+        d[i][j] = s[i] == s[j] ? 0 : 1;
+    }
+
+    for (ll i_base = 2; i_base < n; ++i_base) {
+        for (ll i = i_base, j = 0;  i < n;  ++i, ++j) { 
+            d[i][j] = d[i-1][j+1] + (s[i] == s[j] ? 0 : 1);
+        }
+    }
+
+    for (auto& i : d) {
+        db(i);
+    }
+
+    ll count = 0;
+    for (ll i_base = 0; i_base < n; ++i_base) {
+        for (ll i = i_base, j = 0;  i < n;  ++i, ++j) { 
+            if (d[i][j] <= k) {
+                ++count;
             }
         }
-        p[i] = maxi;
-        d[i] = maxv + 1;
     }
-    db(d);
-    db(p);
-
-    vector<ll> ans;
-    ll x = max_element(d.begin(), d.end()) - d.begin();
-    while (p[x] >= 0) {
-        ans.push_back(a[x]);
-        x = p[x];
-    }
-    ans.push_back(a[x]);
-
-    reverse(ans.begin(), ans.end());
-    cout << ans << endl;
+    cout << count << endl;
 }
 
