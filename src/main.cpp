@@ -439,7 +439,7 @@ struct Vec2
         return this->sin(rhs) / this->cos(rhs);
     }
 
-    bool operator==(const Vec2<T>& rhs)
+    bool operator==(const Vec2<T>& rhs) const
     {
         return x == rhs.x && y == rhs.y;
     }
@@ -506,17 +506,55 @@ int main()
     
     ll n;
     cin >> n;
-    Vec2<ll> m;
-    cin >> m;
     
     vector<Vec2<ll>> pts(n);
     cin >> pts;
 
     list<Vec2<ll>> v(pts.begin(), pts.end());
 
-    while (true) {
+    auto last_pt = *max_element(v.begin(), v.end(), [](const Vec2<ll>& a, const Vec2<ll>& b) {
+        return a.y == b.y ? a.x < b.x : a.y < b.y;
+    });
 
+    vector<Vec2<ll>> ans = {last_pt};
+
+    while (true) {
+        auto min_it = min_element(v.begin(), v.end(), [&last_pt](const Vec2<ll>& a, const Vec2<ll>& b) {
+            if (a == last_pt) {
+                return false;
+            } else if (b == last_pt) {
+                return true;
+            }
+            return (a - last_pt) % (b - last_pt) > 0;
+        });
+        if (min_it == v.end()) {
+            break;
+        }
+        last_pt = *min_it;
+        db(last_pt);
+        //cin.get();
+        if (last_pt == ans.front()) {
+             break;
+        }
+        //v.erase(min_it);
+        ans.push_back(last_pt);
     }
-    return yes();
+
+    for (auto& i : ans) {
+        db(i);
+    }
+    ll k = ans.size();
+    LD p = 0;
+    for (ll i = 0; i < k; ++i) {
+        p += (ans[(i+1)%k] - ans[i]).len<LD>();
+    }
+
+    ll double_s = 0;
+    for (ll i = 0; i < k; ++i) {
+        double_s += ans[(i+1)%k] % ans[i];
+    }
+
+    cout << setprecision(10) << p << endl;
+    cout << abs(LD(double_s)) / 2.0 << endl;
 }
 
