@@ -513,7 +513,7 @@ int main()
     cin >> pts;
 
     for (ll i = 0; i < n; ++i) {
-        if ((pts[i] - m) % (pts[(i+1)%n] - m) < 0) {
+        if (((pts[i] - m) % (pts[(i+1)%n] - m)) * ((pts[(i+1)%n] - m) % (pts[(i+2)%n] - m)) < 0) {
             return no();
         }
     }
