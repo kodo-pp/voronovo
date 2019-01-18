@@ -504,37 +504,14 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    int n, k;
-    cin >> n >> k;
-    string s;
-    cin >> s;
-
-    vector<vector<ll>> d(n);
-    for(int i = 0; i < n; ++i) {
-        d[i].resize(i + 1);
+    Vec2<ll> a, b, c;
+    cin >> a >> b >> c;
+    if ((a - b) * (a - c) == 0) {
+        cout << b + c - a << endl;
+    } else if ((a - b) * (b - c) == 0) {
+        cout << a + c - b << endl;
+    } else {
+        cout << a + b - c << endl;
     }
-    for (int i = 1, j = 0;  i < n;  ++i, ++j) { 
-        d[i][j] = s[i] == s[j] ? 0 : 1;
-    }
-
-    for (int i_base = 2; i_base < n; ++i_base) {
-        for (int i = i_base, j = 0;  i < n;  ++i, ++j) { 
-            d[i][j] = d[i-1][j+1] + (s[i] == s[j] ? 0 : 1);
-        }
-    }
-
-    for (auto& i : d) {
-        db(i);
-    }
-
-    int count = 0;
-    for (int i_base = 0; i_base < n; ++i_base) {
-        for (int i = i_base, j = 0;  i < n;  ++i, ++j) { 
-            if (d[i][j] <= k) {
-                ++count;
-            }
-        }
-    }
-    cout << count << endl;
 }
 
