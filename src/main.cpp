@@ -512,10 +512,10 @@ int main()
     vector<Vec2<ll>> pts(n);
     cin >> pts;
 
-    for (ll i = 0; i < n; ++i) {
-        if (((pts[i] - m) % (pts[(i+1)%n] - m)) * ((pts[(i+1)%n] - m) % (pts[(i+2)%n] - m)) < 0) {
-            return no();
-        }
+    list<Vec2<ll>> v(pts.begin(), pts.end());
+
+    while (true) {
+
     }
     return yes();
 }
