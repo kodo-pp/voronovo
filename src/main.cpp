@@ -512,11 +512,16 @@ int main()
     vector<Vec2<ll>> pts(n);
     cin >> pts;
 
+    LD ang = 0;
     for (ll i = 0; i < n; ++i) {
-        if (((pts[i] - m) % (pts[(i+1)%n] - m)) * ((pts[(i+1)%n] - m) % (pts[(i+2)%n] - m)) < 0) {
-            return no();
-        }
+        ang += asin((pts[i] - m).sin(pts[(i+1)%n] - m)) * 2;
     }
-    return yes();
+
+    db(ang);
+    if (abs(ang) < pi) {
+        return no();
+    } else {
+        return yes();
+    }
 }
 
