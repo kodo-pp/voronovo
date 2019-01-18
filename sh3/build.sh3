@@ -1,4 +1,4 @@
 D_EXECUTABLE=main
 D_SOURCES=(src)
-D_FLAGS[cpp]='-Wall -Wextra -pedantic -std=c++11 -O0 -g -fsanitize=address -DAAA -Wno-reorder'
+D_FLAGS[cpp]='-Wall -Wextra -pedantic -std=c++14 -O0 -g -fsanitize=address -DAAA -Wno-reorder'
 D_LINKFLAGS='-lasan'

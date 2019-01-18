@@ -458,7 +458,7 @@ istream& operator>>(istream& s, Vec2<T>& v)
 template <typename T>
 ostream& operator<<(ostream& s, const Vec2<T>& v)
 {
-    s << v.x << ' ' << v.y;
+    s << '(' << v.x << ' ' << v.y << ')';
     return s;
 }
 
@@ -507,38 +507,50 @@ int main()
     ll n;
     cin >> n;
     
-    vector<Vec2<ll>> pts(n);
-    cin >> pts;
+    vector<Vec2<ll>> v(n);
+    cin >> v;
 
-    list<Vec2<ll>> v(pts.begin(), pts.end());
-
-    auto last_pt = *max_element(v.begin(), v.end(), [](const Vec2<ll>& a, const Vec2<ll>& b) {
+    auto first_pt = *min_element(v.begin(), v.end(), [](const Vec2<ll>& a, const Vec2<ll>& b) {
         return a.y == b.y ? a.x < b.x : a.y < b.y;
     });
+    db(first_pt);
 
-    vector<Vec2<ll>> ans = {last_pt};
 
-    while (true) {
-        auto min_it = min_element(v.begin(), v.end(), [&last_pt](const Vec2<ll>& a, const Vec2<ll>& b) {
-            if (a == last_pt) {
-                return false;
-            } else if (b == last_pt) {
-                return true;
+    stable_sort(v.begin(), v.end(), [first_pt](const auto& a, const auto& b) {
+        if (a == first_pt) {
+            return true;
+        }
+        if (b == first_pt) {
+            return false;
+        }
+        if ((a - first_pt) % (b - first_pt) > 0) {
+            return true;
+        } else if ((a - first_pt) % (b - first_pt) < 0) {
+            return false;
+        } else {
+            return a.y == b.y ? a.x < b.x : a.y < b.y;
+        }
+    });
+
+    db(v);
+
+    vector<Vec2<ll>> ans;
+    for (ll i = 0; i < n; ++i) {
+        if (ans.size() < 2) {
+            ans.push_back(v[i]);
+            continue;
+        }
+        while (ans.size() > 1) {
+            auto prev_vec = ans[ans.size() - 1] - ans[ans.size() - 2];
+            auto cur_vec = v[i] - ans[ans.size() - 1];
+            if (prev_vec % cur_vec > 0) {
+                break;
             }
-            return (a - last_pt) % (b - last_pt) > 0;
-        });
-        if (min_it == v.end()) {
-            break;
+            ans.pop_back();
         }
-        last_pt = *min_it;
-        db(last_pt);
-        //cin.get();
-        if (last_pt == ans.front()) {
-             break;
-        }
-        //v.erase(min_it);
-        ans.push_back(last_pt);
+        ans.push_back(v[i]);
     }
+    
 
     for (auto& i : ans) {
         db(i);
