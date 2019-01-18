@@ -503,17 +503,22 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
+    cout << setprecision(10);
     
     ll n;
     cin >> n;
     
-    vector<Vec2<ll>> pts(n);
+    vector<Lvec> pts(n);
     cin >> pts;
+    Lvec m;
+    cin >> m;
 
-    ll sum = 0;
+
     for (ll i = 0; i < n; ++i) {
-        sum += pts[i] % pts[(i+1)%n];
+        if (((pts[i] - m) % (pts[(i+1)%n] - m)) * ((pts[(i+1)%n] - m) % (pts[(i+2)%n] - m)) < 0) {
+            return no();
+        }
     }
-    cout << static_cast<LD>(abs(sum)) / 2.0 << endl;
+    return yes();
 }
 
