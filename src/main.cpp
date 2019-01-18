@@ -506,17 +506,14 @@ int main()
     
     ll n;
     cin >> n;
-    Vec2<ll> m;
-    cin >> m;
     
     vector<Vec2<ll>> pts(n);
     cin >> pts;
 
+    ll sum = 0;
     for (ll i = 0; i < n; ++i) {
-        if (((pts[i] - m) % (pts[(i+1)%n] - m)) * ((pts[(i+1)%n] - m) % (pts[(i+2)%n] - m)) < 0) {
-            return no();
-        }
+        sum += pts[i] % pts[(i+1)%n];
     }
-    return yes();
+    cout << static_cast<LD>(abs(sum)) / 2.0 << endl;
 }
 
