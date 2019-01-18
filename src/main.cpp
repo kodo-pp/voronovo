@@ -90,14 +90,14 @@ ostream& operator<<(ostream& s, const Student st)
 
 int no()
 {
-    cout << "no" << endl;
+    cout << "NO" << endl;
     return 0;
 }
 
 
 int yes()
 {
-    cout << "yes" << endl;
+    cout << "YES" << endl;
     return 0;
 }
 
@@ -504,14 +504,19 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    Vec2<ll> a, b, c;
-    cin >> a >> b >> c;
-    if ((a - b) * (a - c) == 0) {
-        cout << b + c - a << endl;
-    } else if ((a - b) * (b - c) == 0) {
-        cout << a + c - b << endl;
-    } else {
-        cout << a + b - c << endl;
+    ll n;
+    cin >> n;
+    Vec2<ll> m;
+    cin >> m;
+    
+    vector<Vec2<ll>> pts(n);
+    cin >> pts;
+
+    for (ll i = 0; i < n; ++i) {
+        if ((pts[i] - m) % (pts[(i+1)%n] - m) < 0) {
+            return no();
+        }
     }
+    return yes();
 }
 
