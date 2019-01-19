@@ -478,69 +478,59 @@ template <
 using GraphBase = Container1<Container2<pair<Index, Weight>>>;
 using Graph = GraphBase<ll, ll, StdVectorWrapper, StdVectorWrapper>;
 
+
+struct Node
+{
+    vector<ll> children;
+};
+
+
+ll tree_dfs_max(const vector<Node>& nodes, ll root = 0)
+{
+    ll max_depth = 0;
+    for (ll child : nodes[root].children) {
+        max_depth = max(max_depth, tree_dfs_max(nodes, child) + 1);
+    }
+    return max_depth;
+}
+
+vector<ll> tree_dfs_list(const vector<Node>& nodes, ll target, ll root = 0)
+{
+    if (target == 0) {
+        return {root};
+    }
+    vector<ll> ls;
+    for (ll child : nodes[root].children) {
+        auto child_ls = tree_dfs_list(nodes, target - 1, child);
+        ls.insert(ls.end(), child_ls.begin(), child_ls.end());
+    }
+    return ls;
+}
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n, m;
-    cin >> n >> m;
-    vector<ll> owners(n);
-    cin >> owners;
-    Graph g(n);
-    for (ll i = 0; i < m; ++i) {
-        ll a, b;
-        cin >> a >> b;
-        --a;
-        --b;
-        g[a].push_back({b, owners[a] == owners[b] ? 0 : 1});
-        g[b].push_back({a, owners[a] == owners[b] ? 0 : 1});
+    vector<vector<ll>> children;
+
+    ll n;
+    cin >> n;
+
+    vector<Node> nodes(n);
+
+    for (ll i = 1; i < n; ++i) {
+        ll parent;
+        cin >> parent;
+        nodes[parent-1].children.push_back(i);
     }
 
-    vector<ll> paths(n, -1);
-    vector<ll> lengths(n, 999999999999999LL);
+    ll max_depth = tree_dfs_max(nodes);
+    auto ls = tree_dfs_list(nodes, max_depth);
 
-    deque<tuple<ll, ll, ll>> q {make_tuple(0LL, 0LL, -1LL)};
-    while (!q.empty()) {
-        dbs("BFS 0-1");
-        ll vertex, current_weight, parent;
-        tie(vertex, current_weight, parent) = q.front();
-        dbx(vertex);
-        dbx(current_weight);
-        dbx(parent);
-        q.pop_front();
-        if (lengths[vertex] <= current_weight) {
-            dbsx("skip");
-            continue;
-        }
-        lengths[vertex] = current_weight;
-        paths[vertex] = parent;
-        for (auto& inc : g[vertex]) {
-            dbx(inc.first);
-            dbx(inc.second);
-            if (inc.second == 0) {
-                q.emplace_front(inc.first, current_weight, vertex);
-            } else {
-                q.emplace_back(inc.first, current_weight + 1, vertex);
-            }
-        }
-    }
-    db(paths);
-    db(lengths);
-
-    vector<ll> ans {n - 1};
-    while (ans.back() != -1) {
-        ans.push_back(paths[ans.back()]);
-    }
-    ans.pop_back();
-    if (ans.back() != 0) {
-        cout << "impossible" << endl;
-        return 0;
-    }
-    reverse(ans.begin(), ans.end());
-
-    cout << lengths.back() << ' ' << ans.size() << endl;
-    for (auto& i : ans) {
+    cout << max_depth << endl;
+    cout << ls.size() << endl;
+    for (auto& i : ls) {
         cout << i + 1 << ' ';
     }
     cout << endl;
