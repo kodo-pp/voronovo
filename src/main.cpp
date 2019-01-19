@@ -495,46 +495,53 @@ bool dfs(const Graph& g, vector<ll>& ans, vector<char>& used, vector<char>& true
     return true;
 }
 
+int apply(char op, int a, int b) {
+    if (op == '&') {
+        return a && b;
+    } else {
+        return a || b;
+    }
+}
+
+void mktree(vector<int>& tree, const vector<char>& ops, ll x)
+{
+    if (x > (ll)ops.size()) {
+        return;
+    }
+    mktree(tree, ops, 2 * x);
+    mktree(tree, ops, 2 * x + 1);
+    tree[x] = apply(ops[x-1], tree[2*x], tree[2*x+1]);
+}
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    ll n, m;
-    cin >> n >> m;
-    
-    Graph g(n);
-    for (ll i = 0; i < m; ++i) {
-        ll a, b;
-        cin >> a >> b;
-        --a;
-        --b;
-        g[a].push_back({b, 1});
+    ll n, v;
+    cin >> n >> v;
+    vector<int> tree(n+1, 2);
+    vector<char> ops((n-1)/2);
+    vector<char> may((n-1)/2);
+    for (ll i = 1; i <= (n-1)/2; ++i) {
+        int g, c;
+        cin >> g >> c;
+        ops[i-1] = g == 1 ? '&' : '|';
+        may[i-1] = c;
+    }
+    for (ll i = 1; i <= (n+1)/2; ++i) {
+        int g;
+        cin >> g;
+        tree[i+(n-1)/2] = g;
     }
 
-    vector<char> used(n, 0);
-    vector<char> true_used(n, 0);
-    vector<ll> ans;
-    for (ll root = 0; root < n; ++root) {
-        db(root);
-        db(bool(true_used[root]));
-        if (true_used[root]) {
-            continue;
-        }
-        if (!dfs(g, ans, used, true_used, root)) {
-            cout << -1 << endl;
-            return 0;
-        }
+    mktree(tree, ops, 1);
+
+    db(tree);
+    db(ops);
+
+    if (v == tree[1]) {
+        cout << 0 << endl;
+        return 0;
     }
-    set<ll> was;
-    vector<ll> ans2;
-    for (auto& i : ans) {
-        if (was.count(i+1) > 0) {
-            continue;
-        }
-        was.insert(i+1);
-        ans2.push_back(i+1);
-    }
-    reverse(ans2.begin(), ans2.end());
-    cout << ans2 << endl;
 }
