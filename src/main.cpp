@@ -70,23 +70,6 @@ ostream& operator<<(ostream& s, const vector<T>& v)
 }
 
 
-struct Student
-{
-    int grade;
-    string name;
-
-    bool operator<(const Student& rhs) const
-    {
-        return grade < rhs.grade;
-    }
-};
-
-ostream& operator<<(ostream& s, const Student st)
-{
-    s << st.grade << " " << st.name;
-    return s;
-}
-
 
 int no()
 {
@@ -134,7 +117,6 @@ ll log_down(ll n)
 
 template <typename T>
 class SegmentTree
-
 {
 public:
     SegmentTree(const vector<T>& v, const function<T(T, T)>& func, const T& neutral):
@@ -189,21 +171,12 @@ public:
 
     T _find(ll x, ll l, ll r, ll L, ll R)
     {
-        //dbs("find(x = " << x << ", L = " << L << ", R = " << R << ", l = " << l << ", r = " << r);
-        //dbx(add[x]);
-        //dbx(tree[x]);
-        //dbsx("push(" << x << ")");
         push(x);
-        //dbx(add[x]);
-        //dbx(tree[x]);
         if (R <= l || L >= r) {
-            //dbsx("No intersection");
             return neutral;
         } else if (R <= r && L >= l) {
-            //dbsx("Full entry");
             return tree[x];
         } else {
-            //dbsx("Branching");
             ll M = (L + R) / 2;
             auto a = _find(2 * x,     l, r, L, M);
             auto b = _find(2 * x + 1, l, r, M, R);
@@ -219,21 +192,12 @@ public:
 
     void _add_range(ll x, ll l, ll r, const T& v, ll L, ll R)
     {
-        //dbs("add_range(x = " << x << ", L = " << L << ", R = " << R << ", l = " << l << ", r = " << r << ", v = " << v);
-        //dbx(add[x]);
-        //dbx(tree[x]);
-        //dbsx("push(" << x << ")");
         push(x);
-        //dbx(add[x]);
-        //dbx(tree[x]);
         if (R <= l || L >= r) {
-            //dbsx("No intersection");
             return;
         } else if (R <= r && L >= l) {
-            //dbsx("Full entry");
             add[x] += v;
         } else {
-            //dbsx("Branching");
             ll M = (L + R) / 2;
             _add_range(2 * x,     l, r, v, L, M);
             _add_range(2 * x + 1, l, r, v, M, R);
@@ -262,10 +226,6 @@ public:
     void push(ll x)
     {
         if (add[x] != 0) {
-            //dbs("==> PUSH " << x);
-            //db(tree[x]);
-            //db(add[x]);
-            //dbs("==> END PUSH");
         }
         tree[x] += add[x];
         if (x < k) {
@@ -324,20 +284,16 @@ ostream& operator<<(ostream& out, const Edge& e)
 class Dsu
 {
 public:
-    Dsu(const vector <ll>& _v)
-        : v(_v)
-        , n(_v.size())
+    Dsu(ll n)
+        : n(n)
         , parent(n, -1)
     { }
 
-    int get(int x)
+    ll get(ll x)
     {
-        dbs("get(" << x << ")");
-        int tmp = x;
+        ll tmp = x;
         while (parent.at(tmp) != -1) {
-            dbsx(tmp);
             tmp = parent.at(tmp);
-            dbsx(tmp);
         }
 
         return tmp;
@@ -345,15 +301,13 @@ public:
 
     void join(int a, int b)
     {
-        dbs("join(" << a << ", " << b << ")");
         a = get(a);
         b = get(b);
-        dbx(a);
-        dbx(b);
         if (a == b) {
             return;
         }
 
+        // TODO: rank heuristic
         if (rand() & (1 << 5)) {
             parent.at(a) = b;
         } else {
@@ -363,12 +317,7 @@ public:
 
     int n;
     vector <int> parent;
-    vector <ll> v;
 };
-
-struct NonCollinearError: public std::exception
-{ };
-
 
 template <typename T>
 struct Vec2
@@ -516,18 +465,80 @@ LD polygon_area(const vector<Vec2<T>>& pts)
     return LD(polygon_area(pts)) / 2.0;
 }
 
+
+template <typename T>
+using StdVectorWrapper = vector<T>;
+
+template <
+    typename Weight,
+    typename Index,
+    template <class> class Container1,
+    template <class> class Container2
+>
+using GraphBase = Container1<Container2<pair<Index, Weight>>>;
+using Graph = GraphBase<ll, ll, StdVectorWrapper, StdVectorWrapper>;
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    
-    ll p, h, s, k;
-    cin >> p >> h >> s >> k;
-    LD b = LD(p - s) / LD(h - k);
-    LD c = s - b;
-    assert(abs(b) <= 1);
-    LD a = sqrt(1 - b * b);
-    db(a);
-    db(b);
-    db(c);
+
+    ll n, m;
+    cin >> n >> m;
+    vector<ll> owners(n);
+    cin >> owners;
+    Graph g(n);
+    for (ll i = 0; i < m; ++i) {
+        ll a, b;
+        cin >> a >> b;
+        --a;
+        --b;
+        g[a].push_back({b, owners[a] == owners[b] ? 0 : 1});
+        g[b].push_back({a, owners[a] == owners[b] ? 0 : 1});
+    }
+
+    vector<ll> paths(n, -1);
+    vector<ll> lengths(n, 999999999999999LL);
+
+    deque<tuple<ll, ll, ll>> q {{0, 0, -1}};
+    while (!q.empty()) {
+        dbs("BFS 0-1");
+        ll vertex, current_weight, parent;
+        tie(vertex, current_weight, parent) = q.front();
+        dbx(vertex);
+        dbx(current_weight);
+        dbx(parent);
+        q.pop_front();
+        if (lengths[vertex] <= current_weight) {
+            dbsx("skip");
+            continue;
+        }
+        lengths[vertex] = current_weight;
+        paths[vertex] = parent;
+        for (auto& inc : g[vertex]) {
+            dbx(inc.first);
+            dbx(inc.second);
+            if (inc.second == 0) {
+                q.emplace_front(inc.first, current_weight, vertex);
+            } else {
+                q.emplace_back(inc.first, current_weight + 1, vertex);
+            }
+        }
+    }
+    db(paths);
+    db(lengths);
+
+
+    vector<ll> ans {n - 1};
+    while (ans.back() != -1) {
+        ans.push_back(paths[ans.back()]);
+    }
+    ans.pop_back();
+    reverse(ans.begin(), ans.end());
+
+    cout << lengths.back() << ' ' << ans.size() << endl;
+    for (auto& i : ans) {
+        cout << i + 1 << ' ';
+    }
+    cout << endl;
 }
