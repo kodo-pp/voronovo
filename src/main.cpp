@@ -478,27 +478,21 @@ template <
 using GraphBase = Container1<Container2<pair<Index, Weight>>>;
 using Graph = GraphBase<ll, ll, StdVectorWrapper, StdVectorWrapper>;
 
-pair<bool, ll> dfs(const Graph& g, vector<ll>& path, vector<char>& used, vector<char>& true_used, ll root)
+bool dfs(const Graph& g, vector<ll>& ans, vector<char>& used, vector<char>& true_used, ll root)
 {
     if (used[root]) {
-        return {false, root};
+        return false;
     }
     used[root] = 1;
     true_used[root] = 1;
     for (auto& inc : g[root]) {
-        auto result = dfs(g, path, used, true_used, inc.first);
-        if (!result.first) {
-            if (result.second >= 0) {
-                path.push_back(root);
-            }
-            if (root == result.second) {
-                return {false, -1};
-            }
-            return {false, result.second};
+        if (!dfs(g, ans, used, true_used, inc.first)) {
+            return false;
         }
     }
+    ans.push_back(root);
     used[root] = 0;
-    return {true, -1};
+    return true;
 }
 
 int main()
@@ -520,22 +514,27 @@ int main()
 
     vector<char> used(n, 0);
     vector<char> true_used(n, 0);
-    vector<ll> path;
+    vector<ll> ans;
     for (ll root = 0; root < n; ++root) {
+        db(root);
+        db(bool(true_used[root]));
         if (true_used[root]) {
             continue;
         }
-        auto result = dfs(g, path, used, true_used, root);
-        if (!result.first) {
-            cout << "YES" << endl;
-            reverse(path.begin(), path.end());
-            for (auto& i : path) {
-                cout << i + 1 << ' ';
-            }
-            cout << endl;
+        if (!dfs(g, ans, used, true_used, root)) {
+            cout << -1 << endl;
             return 0;
         }
     }
-    
-    cout << "NO" << endl;
+    set<ll> was;
+    vector<ll> ans2;
+    for (auto& i : ans) {
+        if (was.count(i+1) > 0) {
+            continue;
+        }
+        was.insert(i+1);
+        ans2.push_back(i+1);
+    }
+    reverse(ans2.begin(), ans2.end());
+    cout << ans2 << endl;
 }
