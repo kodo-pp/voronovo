@@ -478,23 +478,21 @@ template <
 using GraphBase = Container1<Container2<pair<Index, Weight>>>;
 using Graph = GraphBase<ll, ll, StdVectorWrapper, StdVectorWrapper>;
 
-void bfs(const Graph& g, vector<ll>& path, vector<char>& used, ll root)
+bool dfs(const Graph& g, vector<ll>& path, vector<char>& used, vector<char>& true_used, ll root)
 {
-    queue<ll> q;
-    q.push(root);
-
-    while (!q.empty()) {
-        ll vertex = q.front();
-        q.pop();
-        if (used[vertex]) {
-            continue;
-        }
-        used[vertex] = 1;
-        path.push_back(vertex);
-        for (auto& inc : g[vertex]) {
-            q.push(inc.first);
+    if (used[root]) {
+        return false;
+    }
+    used[root] = 1;
+    true_used[root] = 1;
+    for (auto& inc : g[root]) {
+        if (!dfs(g, path, used, true_used, inc.first)) {
+            path.push_back(root);
+            return false;
         }
     }
+    used[root] = 0;
+    return true;
 }
 
 int main()
@@ -505,51 +503,32 @@ int main()
     ll n, m;
     cin >> n >> m;
     
-    auto index = [n, m](ll x, ll y) -> ll {
-        return m * y + x;
-    };
-
-    Graph g(n*m);
-
-    vector<vector<int>> field(n, vector<int>(m));
-    cin >> field;
-
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    --a;
-    --b;
-    --c;
-    --d;
-
-    vector<char> used(n*m, 0);
-    queue<tuple<ll, ll, ll>> q;
-    q.emplace(a, b, 0);
-
-    while (!q.empty()) {
-        auto vertex = q.front();
-        ll x, y, ln;
-        tie(x, y, ln) = vertex;
-        q.pop();
-
-        if (x < 0 || x >= m || y < 0 || y >= n) {
-            continue;
-        }
-        if (field[y][x] == 1) {
-            continue;
-        }
-        if (used[index(x, y)]) {
-            continue;
-        }
-        used[index(x, y)] = 1;
-        if (make_pair(x, y) == make_pair(c, d)) {
-            cout << ln << endl;
-            return 0;
-        }
-        q.emplace(x, y-1, ln+1);
-        q.emplace(x, y+1, ln+1);
-        q.emplace(x-1, y, ln+1);
-        q.emplace(x+1, y, ln+1);
+    Graph g(n);
+    for (ll i = 0; i < m; ++i) {
+        ll a, b;
+        cin >> a >> b;
+        --a;
+        --b;
+        g[a].push_back({b, 1});
     }
 
-    cout << -1 << endl;
+    vector<char> used(n, 0);
+    vector<char> true_used(n, 0);
+    vector<ll> path;
+    for (ll root = 0; root < n; ++root) {
+        if (used[root]) {
+            continue;
+        }
+        if (!dfs(g, path, used, true_used, root)) {
+            cout << "YES" << endl;
+            reverse(path.begin(), path.end());
+            for (auto& i : path) {
+                cout << i + 1 << ' ';
+            }
+            cout << endl;
+            return 0;
+        }
+    }
+    
+    cout << "NO" << endl;
 }
