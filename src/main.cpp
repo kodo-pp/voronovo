@@ -527,6 +527,7 @@ int main()
 
     ll max_depth = tree_dfs_max(nodes);
     auto ls = tree_dfs_list(nodes, max_depth);
+    sort(ls.begin(), ls.end());
 
     cout << max_depth << endl;
     cout << ls.size() << endl;
