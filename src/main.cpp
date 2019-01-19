@@ -500,7 +500,7 @@ int main()
     vector<ll> paths(n, -1);
     vector<ll> lengths(n, 999999999999999LL);
 
-    deque<tuple<ll, ll, ll>> q {{0, 0, -1}};
+    deque<tuple<ll, ll, ll>> q {make_tuple(0LL, 0LL, -1LL)};
     while (!q.empty()) {
         dbs("BFS 0-1");
         ll vertex, current_weight, parent;
@@ -528,12 +528,15 @@ int main()
     db(paths);
     db(lengths);
 
-
     vector<ll> ans {n - 1};
     while (ans.back() != -1) {
         ans.push_back(paths[ans.back()]);
     }
     ans.pop_back();
+    if (ans.back() != 0) {
+        cout << "impossible" << endl;
+        return 0;
+    }
     reverse(ans.begin(), ans.end());
 
     cout << lengths.back() << ' ' << ans.size() << endl;

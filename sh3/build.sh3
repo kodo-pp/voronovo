@@ -1,4 +1,5 @@
 D_EXECUTABLE=main
 D_SOURCES=(src)
+D_EXT_TAB[cpp]=clang++
 D_FLAGS[cpp]='-Wall -Wextra -pedantic -std=c++11 -O0 -g -fsanitize=address -DAAA -Wno-reorder'
 D_LINKFLAGS='-lasan'
