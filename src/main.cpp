@@ -499,74 +499,35 @@ LD rad_to_deg(LD rad)
     return rad * 180.0 / pi;
 }
 
+template <typename T>
+T double_polygon_area(const vector<Vec2<T>>& pts)
+{
+    T sum = 0;
+    ll n = pts.size();
+    for (ll i = 0; i < n; ++i) {
+        sum += pts[i] % pts[(i+1)%n];
+    }
+    return sum;
+}
+
+template <typename T>
+LD polygon_area(const vector<Vec2<T>>& pts)
+{
+    return LD(polygon_area(pts)) / 2.0;
+}
+
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     
-    ll n;
-    cin >> n;
-    
-    vector<Vec2<ll>> v(n);
-    cin >> v;
-
-    auto first_pt = *min_element(v.begin(), v.end(), [](const Vec2<ll>& a, const Vec2<ll>& b) {
-        return a.y == b.y ? a.x < b.x : a.y < b.y;
-    });
-    db(first_pt);
-
-
-    stable_sort(v.begin(), v.end(), [first_pt](const auto& a, const auto& b) {
-        if (a == first_pt) {
-            return true;
-        }
-        if (b == first_pt) {
-            return false;
-        }
-        if ((a - first_pt) % (b - first_pt) > 0) {
-            return true;
-        } else if ((a - first_pt) % (b - first_pt) < 0) {
-            return false;
-        } else {
-            return a.y == b.y ? a.x < b.x : a.y < b.y;
-        }
-    });
-
-    db(v);
-
-    vector<Vec2<ll>> ans;
-    for (ll i = 0; i < n; ++i) {
-        if (ans.size() < 2) {
-            ans.push_back(v[i]);
-            continue;
-        }
-        while (ans.size() > 1) {
-            auto prev_vec = ans[ans.size() - 1] - ans[ans.size() - 2];
-            auto cur_vec = v[i] - ans[ans.size() - 1];
-            if (prev_vec % cur_vec > 0) {
-                break;
-            }
-            ans.pop_back();
-        }
-        ans.push_back(v[i]);
-    }
-    
-
-    for (auto& i : ans) {
-        db(i);
-    }
-    ll k = ans.size();
-    LD p = 0;
-    for (ll i = 0; i < k; ++i) {
-        p += (ans[(i+1)%k] - ans[i]).len<LD>();
-    }
-
-    ll double_s = 0;
-    for (ll i = 0; i < k; ++i) {
-        double_s += ans[(i+1)%k] % ans[i];
-    }
-
-    cout << setprecision(10) << p << endl;
-    cout << abs(LD(double_s)) / 2.0 << endl;
+    ll p, h, s, k;
+    cin >> p >> h >> s >> k;
+    LD b = LD(p - s) / LD(h - k);
+    LD c = s - b;
+    assert(abs(b) <= 1);
+    LD a = sqrt(1 - b * b);
+    db(a);
+    db(b);
+    db(c);
 }
-
