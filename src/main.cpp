@@ -478,21 +478,27 @@ template <
 using GraphBase = Container1<Container2<pair<Index, Weight>>>;
 using Graph = GraphBase<ll, ll, StdVectorWrapper, StdVectorWrapper>;
 
-bool dfs(const Graph& g, vector<ll>& path, vector<char>& used, vector<char>& true_used, ll root)
+pair<bool, ll> dfs(const Graph& g, vector<ll>& path, vector<char>& used, vector<char>& true_used, ll root)
 {
     if (used[root]) {
-        return false;
+        return {false, root};
     }
     used[root] = 1;
     true_used[root] = 1;
     for (auto& inc : g[root]) {
-        if (!dfs(g, path, used, true_used, inc.first)) {
-            path.push_back(root);
-            return false;
+        auto result = dfs(g, path, used, true_used, inc.first);
+        if (!result.first) {
+            if (result.second >= 0) {
+                path.push_back(root);
+            }
+            if (root == result.second) {
+                return {false, -1};
+            }
+            return {false, result.second};
         }
     }
     used[root] = 0;
-    return true;
+    return {true, -1};
 }
 
 int main()
@@ -516,10 +522,11 @@ int main()
     vector<char> true_used(n, 0);
     vector<ll> path;
     for (ll root = 0; root < n; ++root) {
-        if (used[root]) {
+        if (true_used[root]) {
             continue;
         }
-        if (!dfs(g, path, used, true_used, root)) {
+        auto result = dfs(g, path, used, true_used, root);
+        if (!result.first) {
             cout << "YES" << endl;
             reverse(path.begin(), path.end());
             for (auto& i : path) {
