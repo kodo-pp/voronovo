@@ -478,33 +478,23 @@ template <
 using GraphBase = Container1<Container2<pair<Index, Weight>>>;
 using Graph = GraphBase<ll, ll, StdVectorWrapper, StdVectorWrapper>;
 
-
-struct Node
+void bfs(const Graph& g, vector<ll>& path, vector<char>& used, ll root)
 {
-    vector<ll> children;
-};
+    queue<ll> q;
+    q.push(root);
 
-
-ll tree_dfs_max(const vector<Node>& nodes, ll root = 0)
-{
-    ll max_depth = 0;
-    for (ll child : nodes[root].children) {
-        max_depth = max(max_depth, tree_dfs_max(nodes, child) + 1);
+    while (!q.empty()) {
+        ll vertex = q.front();
+        q.pop();
+        if (used[vertex]) {
+            continue;
+        }
+        used[vertex] = 1;
+        path.push_back(vertex);
+        for (auto& inc : g[vertex]) {
+            q.push(inc.first);
+        }
     }
-    return max_depth;
-}
-
-vector<ll> tree_dfs_list(const vector<Node>& nodes, ll target, ll root = 0)
-{
-    if (target == 0) {
-        return {root};
-    }
-    vector<ll> ls;
-    for (ll child : nodes[root].children) {
-        auto child_ls = tree_dfs_list(nodes, target - 1, child);
-        ls.insert(ls.end(), child_ls.begin(), child_ls.end());
-    }
-    return ls;
 }
 
 int main()
@@ -512,27 +502,54 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    vector<vector<ll>> children;
+    ll n, m;
+    cin >> n >> m;
+    
+    auto index = [n, m](ll x, ll y) -> ll {
+        return m * y + x;
+    };
 
-    ll n;
-    cin >> n;
+    Graph g(n*m);
 
-    vector<Node> nodes(n);
+    vector<vector<int>> field(n, vector<int>(m));
+    cin >> field;
 
-    for (ll i = 1; i < n; ++i) {
-        ll parent;
-        cin >> parent;
-        nodes[parent-1].children.push_back(i);
+    ll a, b, c, d;
+    cin >> a >> b >> c >> d;
+    --a;
+    --b;
+    --c;
+    --d;
+
+    vector<char> used(n*m, 0);
+    queue<tuple<ll, ll, ll>> q;
+    q.emplace(a, b, 0);
+
+    while (!q.empty()) {
+        auto vertex = q.front();
+        ll x, y, ln;
+        tie(x, y, ln) = vertex;
+        q.pop();
+
+        if (x < 0 || x >= m || y < 0 || y >= n) {
+            continue;
+        }
+        if (field[y][x] == 1) {
+            continue;
+        }
+        if (used[index(x, y)]) {
+            continue;
+        }
+        used[index(x, y)] = 1;
+        if (make_pair(x, y) == make_pair(c, d)) {
+            cout << ln << endl;
+            return 0;
+        }
+        q.emplace(x, y-1, ln+1);
+        q.emplace(x, y+1, ln+1);
+        q.emplace(x-1, y, ln+1);
+        q.emplace(x+1, y, ln+1);
     }
 
-    ll max_depth = tree_dfs_max(nodes);
-    auto ls = tree_dfs_list(nodes, max_depth);
-    sort(ls.begin(), ls.end());
-
-    cout << max_depth << endl;
-    cout << ls.size() << endl;
-    for (auto& i : ls) {
-        cout << i + 1 << ' ';
-    }
-    cout << endl;
+    cout << -1 << endl;
 }
